@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <body>
 
 <header th:fragment="header(usuario)" class="painel-header">
@@ -36,7 +36,9 @@
             <span th:unless="${usuario.foto != null}">👤</span>
 
             <div class="dropdown-menu">
+
                 <a th:href="@{/configuracoes}">Meu Perfil</a>
+
                 <a th:href="@{/chat}">💬 Chat</a>
                 <a th:href="@{/configuracoes}">Configurações</a>
                 <a href="#"

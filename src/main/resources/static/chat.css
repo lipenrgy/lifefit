@@ -7,10 +7,10 @@ body.chat-page {
 
 .chat-container {
     display: flex;
-    height: calc(100vh - 70px);
+    height: calc(100vh - 90px);
     background-color: var(--fundo-primario);
+    margin-top: 0;
 }
-
 /* --- SIDEBAR --- */
 .chat-sidebar {
     width: 280px;
