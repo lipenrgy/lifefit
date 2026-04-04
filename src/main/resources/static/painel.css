@@ -1,0 +1,515 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+/* 1. DEFINIÇÃO DAS CORES (VARIÁVEIS) */
+:root {
+    --violeta: #8A2BE2;
+    --fundo-primario: #F5F5F5;
+    --fundo-secundario: #FFFFFF;
+    --texto-primario: #333333;
+    --texto-secundario: #555555;
+    --borda: #ccc;
+    --sombra: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --btn-icon-hover: #e0e0e0;
+}
+
+/* 2. DEFINIÇÃO DAS CORES DO MODO ESCURO */
+/* Usamos html.dark-mode para funcionar com o script da <head> */
+html.dark-mode {
+    --fundo-primario: #121212;
+    --fundo-secundario: #1e1e1e;
+    --texto-primario: #eaeaea;
+    --texto-secundario: #bbbbbb;
+    --borda: #444;
+    --sombra: 0 4px 8px rgba(0, 0, 0, 0.3);
+    --btn-icon-hover: #333;
+}
+html.dark-mode .lista-alunos li:hover,
+html.dark-mode .lista-alunos li.active {
+    background-color: #3f304d;
+}
+
+/* 3. APLICAÇÃO GLOBAL E RESET */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--fundo-primario);
+    color: var(--texto-primario);
+    margin: 0;
+    padding: 0;
+}
+
+/* 4. BOTÃO DE ÍCONE (Toggle) */
+.btn-icon {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--texto-secundario);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.btn-icon:hover {
+    background-color: var(--btn-icon-hover);
+}
+
+/* 5. CABEÇALHO DO PAINEL */
+.painel-header {
+    background-color: var(--fundo-secundario);
+    padding: 15px 30px;
+    box-shadow: var(--sombra);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.painel-header h1 {
+    color: var(--violeta);
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+/* Controles do cabeçalho (Botão de tema e menu de usuário) */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* --- ESTILO DO BOTÃO SAIR (CORRIGIDO) --- */
+
+.btn-sair {
+    /* Faz o botão ocupar a largura do menu, igual aos outros links */
+    display: block;
+    width: 100%;
+    padding: 12px 16px; /* Ajuste para ficar igual aos links de cima */
+
+    /* Tira o estilo de "botão" fixo */
+    border: none;
+    border-radius: 0;
+
+    /* AQUI ESTÁ O SEGREDO: Fundo transparente por padrão */
+    background-color: transparent;
+    color: var(--texto-primario); /* Usa a cor do texto do tema */
+
+    /* Uma linha fina em cima para separar */
+    border-top: 1px solid var(--borda);
+
+    text-decoration: none;
+    text-align: left; /* Garante que o texto fique alinhado à esquerda */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Só fica vermelho quando o mouse passa por cima */
+/* Só fica vermelho quando o mouse passa por cima */
+.btn-sair:hover {
+    background-color: #dc3545 !important; /* O !important obriga a ser vermelho */
+    color: #ffffff !important; /* O !important obriga o texto a ser branco */
+}
+
+/* 6. MENU DROPDOWN DO USUÁRIO */
+.user-icon-painel {
+    position: relative;
+    cursor: pointer;
+    font-size: 1.8rem;
+    color: var(--texto-secundario);
+}
+
+.user-icon-painel .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--fundo-secundario);
+    border-radius: 5px;
+    box-shadow: var(--sombra);
+    min-width: 180px;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.user-icon-painel:hover .dropdown-menu {
+    display: block;
+}
+
+.user-icon-painel .dropdown-menu a {
+    color: var(--texto-primario);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.2s;
+}
+
+.user-icon-painel .dropdown-menu a:hover {
+    background-color: var(--fundo-primario);
+}
+
+/* 7. LAYOUT PAINEL TREINADOR */
+.painel-container {
+    display: flex;
+    gap: 30px;
+    padding: 30px;
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
+.lista-alunos {
+    flex: 1;
+    background-color: var(--fundo-secundario);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: var(--sombra);
+    height: fit-content;
+}
+
+.lista-alunos h2 {
+    color: var(--violeta);
+    margin-top: 0;
+    border-bottom: 2px solid var(--fundo-primario);
+    padding-bottom: 10px;
+}
+
+.lista-alunos ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.lista-alunos li {
+    padding: 12px;
+    border-bottom: 1px solid var(--fundo-primario);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.lista-alunos li:hover,
+.lista-alunos li.active {
+    background-color: #e9d8f8;
+}
+
+/* Regra específica para o hover/active no modo escuro */
+html.dark-mode .lista-alunos li:hover,
+html.dark-mode .lista-alunos li.active {
+    background-color: #3f304d;
+}
+
+.area-plano {
+    flex: 2;
+    background-color: var(--fundo-secundario);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: var(--sombra);
+}
+
+.area-plano h2 {
+    color: var(--violeta);
+    margin-top: 0;
+}
+
+.area-plano form textarea {
+    width: 100%;
+    min-height: 200px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid var(--borda);
+    border-radius: 5px;
+    font-family: 'Poppins', sans-serif;
+    resize: vertical;
+    background-color: var(--fundo-primario);
+    color: var(--texto-primario);
+}
+
+.area-plano form button {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--violeta);
+    color: #FFFFFF;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.area-plano form button:hover {
+    background-color: #701db0;
+}
+
+#form-plano.hidden {
+    display: none;
+}
+
+/* 8. LAYOUT PAINEL ALUNO */
+.painel-container-aluno {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.plano-display {
+    background-color: var(--fundo-secundario);
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: var(--sombra);
+    margin-bottom: 30px;
+}
+
+.plano-display h2 {
+    color: var(--violeta);
+    margin-top: 0;
+    border-bottom: 2px solid var(--fundo-primario);
+    padding-bottom: 10px;
+}
+
+.plano-conteudo {
+    white-space: pre-wrap;
+    line-height: 1.7;
+    font-size: 1rem;
+    color: var(--texto-secundario);
+}
+/* --- ESTILO DO BOTÃO SWITCH (TEMA) PARA O PAINEL --- */
+
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+    /* Removemos a margem direita fixa para se ajustar ao flexbox do header-controls */
+}
+
+.theme-switch {
+    display: inline-block;
+    height: 34px;
+    position: relative;
+    width: 60px;
+}
+
+.theme-switch input {
+    display: none;
+}
+
+.slider {
+    background-color: #ccc;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+    border-radius: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+}
+
+.slider:before {
+    background-color: #fff;
+    bottom: 4px;
+    content: "";
+    height: 26px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    width: 26px;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+input:checked + .slider {
+    background-color: var(--violeta);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.icon-sun, .icon-moon {
+    font-size: 14px;
+    z-index: 1;
+    user-select: none;
+}
+
+.icon-sun { margin-left: 2px; }
+.icon-moon { margin-right: 2px; }
+
+
+
+/* Fundo escuro atrás da janela */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Fundo preto transparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+/* A janela em si */
+.modal-content {
+    background: var(--fundo-secundario, #1f1f1f); /* Usa tua cor escura */
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    border: 1px solid #333;
+    color: var(--texto-primario, #fff);
+    position: relative;
+}
+
+/* Quando a classe 'open' é adicionada via JS, o modal aparece */
+.modal-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Botão de fechar (X) */
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #888;
+}
+.close-modal:hover { color: #fff; }
+
+/* Estilo do input de arquivo */
+.file-upload-wrapper {
+    margin: 20px 0;
+    border: 2px dashed #444;
+    padding: 20px;
+    border-radius: 8px;
+}
+/* Fundo escuro atrás da janela */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Fundo preto transparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+/* A janela em si */
+.modal-content {
+    background: var(--fundo-secundario, #1f1f1f); /* Usa tua cor escura */
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    border: 1px solid #333;
+    color: var(--texto-primario, #fff);
+    position: relative;
+}
+
+/* Quando a classe 'open' é adicionada via JS, o modal aparece */
+.modal-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Botão de fechar (X) */
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #888;
+}
+.close-modal:hover { color: #fff; }
+
+/* Estilo do input de arquivo */
+.file-upload-wrapper {
+    margin: 20px 0;
+    border: 2px dashed #444;
+    padding: 20px;
+    border-radius: 8px;
+}
+/* --- FOTO DE PERFIL NO HEADER (ATUALIZADO) --- */
+
+/* Estilo da imagem redonda */
+.user-avatar {
+    width: 55px;        /* Aumentei de 40px para 55px */
+    height: 55px;       /* Aumentei de 40px para 55px */
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--violeta);
+    cursor: pointer;
+    vertical-align: middle;
+    transition: transform 0.2s; /* Efeito suave ao passar o mouse */
+}
+
+.user-avatar:hover {
+    transform: scale(1.1); /* Um pequeno zoom quando passa o mouse */
+}
+
+/* Ajuste para alinhar o ícone/foto com o dropdown */
+.user-icon-painel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 55px; /* Garante que o container tenha a mesma altura */
+}
+
+/* Aumentei também o bonequinho padrão caso não tenha foto */
+.user-icon-painel span {
+    font-size: 2.2rem; /* Aumentei de 1.8rem para 2.2rem */
+}
+
+
+/* --- Botão Home (Casinha) --- */
+
+/* 1. Comportamento padrão (Modo Claro) -> Cor escura */
+.btn-home {
+    display: flex;
+    align-items: center;
+    color: #333333; /* Cinza escuro para aparecer no fundo branco */
+    text-decoration: none;
+    transition: color 0.3s ease;
+    margin-right: 15px; /* Espaço para não grudar nos outros ícones */
+}
+
+/* 2. Comportamento quando o Modo Escuro está ativado -> Cor branca */
+html.dark-mode .btn-home {
+    color: #ffffff; /* Branco para aparecer no fundo preto */
+}
+
+/* 3. Quando passa o mouse -> Cor roxa (igual nos dois modos) */
+.btn-home:hover {
+    color: #9b5de5;
+}
+
+/* Ajuste do tamanho do ícone */
+.btn-home svg {
+    width: 24px;
+    height: 24px;
+}
+
+.plano-conteudo {
+    white-space: pre-wrap;
+    line-height: 1.7;
+    font-size: 1rem;
+    color: var(--texto-secundario);
+    /* 👇 Adicione esta linha aqui */
+    text-transform: capitalize;
+}

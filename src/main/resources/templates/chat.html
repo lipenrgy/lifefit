@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - Life Fit</title>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="stylesheet" th:href="@{/painel.css}">
+    <link rel="stylesheet" th:href="@{/chat.css}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') document.documentElement.classList.add('dark-mode');
+            else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
+                document.documentElement.classList.add('dark-mode');
+        })();
+    </script>
+</head>
+<body class="chat-page">
+
+<div th:replace="~{fragments/header :: header(${usuario})}"></div>
+
+<div class="chat-container">
+    <div class="chat-sidebar">
+        <div class="sidebar-header">
+            <h3>💬 Mensagens</h3>
+        </div>
+        <div id="lista-contatos" class="contacts-list">
+            <div style="padding: 20px; text-align: center; color: #888;">
+                Carregando...
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-main">
+        <div class="chat-header" id="chat-header">
+            <div class="chat-user-info">
+                <h3 id="nome-destinatario">Selecione um contato</h3>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+            <div class="empty-state">
+                <span style="font-size: 4rem; margin-bottom: 10px;">👋</span>
+                <p>Escolha um contato à esquerda para começar a conversar.</p>
+            </div>
+        </div>
+
+        <form class="chat-input-area" id="form-mensagem" style="display: none;">
+            <input type="hidden" id="id-destinatario-atual">
+            <input type="text" id="input-mensagem" placeholder="Digite sua mensagem..." autocomplete="off">
+            <button type="submit" class="btn-enviar">➤</button>
+        </form>
+    </div>
+</div>
+
+<script th:src="@{/chat.js}"></script>
+<script th:src="@{/theme-toggle.js}"></script>
+</body>
+</html>

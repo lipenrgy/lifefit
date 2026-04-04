@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Conta - Life Fit</title>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="stylesheet" th:href="@{/painel.css}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .config-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: var(--fundo-secundario);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: var(--sombra);
+        }
+        .config-header {
+            border-bottom: 1px solid var(--borda);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+        .config-header h2 { color: var(--violeta); margin: 0; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--texto-secundario);
+        }
+        .input-wrapper { position: relative; width: 100%; }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            padding-right: 45px;
+            border: 1px solid var(--borda);
+            border-radius: 5px;
+            background-color: var(--fundo-primario);
+            color: var(--texto-primario);
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .toggle-eye {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.2rem;
+            user-select: none;
+            filter: grayscale(100%);
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+        .toggle-eye:hover { opacity: 1; }
+        .btn-salvar {
+            background-color: var(--violeta);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        .btn-salvar:hover { background-color: #6a1b9a; }
+    </style>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') document.documentElement.classList.add('dark-mode');
+            else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
+                document.documentElement.classList.add('dark-mode');
+        })();
+    </script>
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header(${usuario})}"></div>
+
+<main>
+    <div class="config-container">
+        <div class="config-header">
+            <h2>Meus Dados</h2>
+            <p style="font-size: 0.9em; color: #666;">Atualize suas informações pessoais</p>
+        </div>
+
+        <form id="form-config">
+            <div class="form-group">
+                <label for="nome">Seu Nome Completo</label>
+                <input type="text" id="nome" name="nome" th:value="${usuario.nome}" required>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--borda); margin: 30px 0;">
+
+            <div class="config-header">
+                <h2>Segurança</h2>
+                <p style="font-size: 0.9em; color: #666;">Preencha apenas se quiser trocar a senha</p>
+            </div>
+
+            <div class="form-group">
+                <label for="nova_senha">Nova Senha</label>
+                <div class="input-wrapper">
+                    <input type="password" id="nova_senha" name="nova_senha" placeholder="Digite a nova senha">
+                    <span class="toggle-eye" onclick="toggleSenha('nova_senha', this)">👁️</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmar_senha">Confirmar Nova Senha</label>
+                <div class="input-wrapper">
+                    <input type="password" id="confirmar_senha" name="confirmar_senha" placeholder="Repita a nova senha">
+                    <span class="toggle-eye" onclick="toggleSenha('confirmar_senha', this)">👁️</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-salvar">Salvar Alterações</button>
+        </form>
+    </div>
+</main>
+
+<script th:src="@{/theme-toggle.js}"></script>
+<script>
+    function toggleSenha(campoID, icone) {
+        const input = document.getElementById(campoID);
+        if (input.type === "password") {
+            input.type = "text";
+            icone.textContent = "🙈";
+        } else {
+            input.type = "password";
+            icone.textContent = "👁️";
+        }
+    }
+
+    document.getElementById('form-config').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const novaSenha = document.getElementById('nova_senha').value;
+        const confirmarSenha = document.getElementById('confirmar_senha').value;
+
+        if (novaSenha !== confirmarSenha) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Atenção',
+                text: 'As senhas não coincidem!',
+                confirmButtonColor: '#8A2BE2'
+            });
+            return;
+        }
+
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        const params = new URLSearchParams({
+            nome: document.getElementById('nome').value,
+            nova_senha: novaSenha
+        });
+
+        const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+        headers[csrfHeader] = csrfToken;
+
+        fetch('/api/atualizar-perfil', {
+            method: 'POST',
+            headers: headers,
+            body: params
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Atualizado!',
+                        text: data.message,
+                        confirmButtonColor: '#8A2BE2'
+                    }).then(result => {
+                        if (result.isConfirmed) location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: data.message,
+                        confirmButtonColor: '#d33'
+                    });
+                }
+            })
+            .catch(() => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro de Conexão',
+                    text: 'Não foi possível salvar os dados.',
+                    confirmButtonColor: '#d33'
+                });
+            });
+    });
+</script>
+</body>
+</html>

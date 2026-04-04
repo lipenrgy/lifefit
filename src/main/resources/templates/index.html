@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Life Fit</title>
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <link rel="stylesheet" th:href="@{/style.css}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+  <style>
+    .nav-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #8A2BE2; cursor: pointer; transition: transform 0.2s; }
+    .nav-avatar:hover { transform: scale(1.1); }
+    .user-menu-container { position: relative; display: flex; align-items: center; gap: 10px; height: 100%; padding-bottom: 5px; }
+    .home-dropdown { display: none; position: absolute; top: 100%; right: 0; background-color: var(--card-bg, #fff); min-width: 180px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 8px; z-index: 1000; padding: 10px 0; margin-top: 10px; }
+    .home-dropdown::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
+    .dark-mode .home-dropdown { background-color: #1f1f1f; border: 1px solid #333; }
+    .user-menu-container:hover .home-dropdown { display: block; }
+    .home-dropdown a { color: #333; padding: 12px 20px; text-decoration: none; display: block; font-size: 0.95rem; transition: background 0.2s; }
+    .dark-mode .home-dropdown a { color: #fff; }
+    .home-dropdown a:hover { background-color: #f1f1f1; color: #8A2BE2; }
+    .dark-mode .home-dropdown a:hover { background-color: #333; }
+    .swiper { width: 100%; padding: 40px 10px; }
+    .swiper-slide { display: flex; justify-content: center; height: auto; }
+    .trainer-card { width: 100%; max-width: 320px; background: #fff; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 1px solid transparent; transition: transform 0.3s; display: flex; flex-direction: column; align-items: center; }
+    .dark-mode .trainer-card { background: #1e1e1e; border-color: #333; }
+    .trainer-card:hover { transform: translateY(-5px); border-color: #8A2BE2; }
+    .swiper-pagination-bullet-active { background: #8A2BE2 !important; }
+    .swiper-button-next, .swiper-button-prev { color: #8A2BE2 !important; }
+    .badge-escolhido { color: #8A2BE2; font-weight: bold; font-size: 0.9rem; }
+  </style>
+  <script>
+    (function() {
+      const theme = localStorage.getItem('theme');
+      if (theme === 'dark' || (theme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark-mode');
+      }
+    })();
+  </script>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="container">
+    <a href="#inicio" class="logo">Life Fit</a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#inicio">Início</a></li>
+        <li><a href="#profissionais">Equipe</a></li>
+        <li><a href="#calculo">Cálculo</a></li>
+        <li><a href="#sobre-nos">Sobre Nós</a></li>
+      </ul>
+    </nav>
+    <div class="nav-actions">
+      <div class="theme-switch-wrapper">
+        <label class="theme-switch" for="checkbox-theme">
+          <input type="checkbox" id="checkbox-theme"/>
+          <div class="slider round">
+            <span class="icon-sun">☀️</span>
+            <span class="icon-moon">🌙</span>
+          </div>
+        </label>
+      </div>
+
+      <!-- LOGADO -->
+      <div th:if="${estaLogado}" class="user-menu-container">
+        <span style="font-size: 0.9em; font-weight: bold;" th:text="'Olá, ' + ${usuario.nome}"></span>
+        <img th:if="${usuario.foto != null}"
+             th:src="@{'/uploads/' + ${usuario.foto}}"
+             alt="Perfil" class="nav-avatar"/>
+        <span th:unless="${usuario.foto != null}" style="font-size: 2rem; cursor: pointer;">👤</span>
+        <div class="home-dropdown">
+          <a th:href="${usuario.tipo == 'aluno'} ? '/aluno/painel' : '/treinador/painel'"><strong>Meu Painel</strong></a>
+          <a th:href="@{/configuracoes}">Configurações</a>
+          <a th:href="@{/chat}">💬 Chat</a>
+          <hr style="border: 0; border-top: 1px solid #eee;">
+          <a href="#" onclick="event.preventDefault(); document.getElementById('form-logout-index').submit();"
+             style="color: red;">Sair</a>
+        </div>
+      </div>
+      <form id="form-logout-index" th:action="@{/logout}" method="POST" style="display:none">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+      </form>
+
+      <!-- NÃO LOGADO -->
+      <a th:unless="${estaLogado}" th:href="@{/login}">
+        <button class="btn">Login</button>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="inicio" class="hero">
+    <div class="container hero-content">
+      <div class="hero-text">
+        <h1>Transforme seu corpo, eleve sua mente.</h1>
+        <p>Na Life Fit, oferecemos o melhor ambiente e os melhores profissionais para você alcançar seus objetivos.</p>
+        <a th:if="${estaLogado}"
+           th:href="${usuario.tipo == 'aluno'} ? '/aluno/painel' : '/treinador/painel'"
+           class="btn btn-primary"
+           th:text="${usuario.tipo == 'aluno'} ? 'Acessar meu Treino' : 'Acessar meus Alunos'">
+        </a>
+        <a th:unless="${estaLogado}" href="#calculo" class="btn btn-primary">Comece sua avaliação</a>
+      </div>
+      <div class="hero-image">
+        <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=1200&q=85" alt="Pessoa se exercitando">
+      </div>
+    </div>
+  </section>
+
+  <section id="profissionais" class="section">
+    <div class="container">
+      <h2 style="text-align: center; margin-bottom: 30px;">Conheça Nossa Equipe</h2>
+      <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+          <div th:if="${#lists.isEmpty(profissionais)}" class="swiper-slide">
+            <p>Nenhum profissional cadastrado.</p>
+          </div>
+          <div th:each="prof : ${profissionais}" class="swiper-slide">
+            <div class="trainer-card">
+              <img th:if="${prof.foto != null}"
+                   th:src="@{'/uploads/' + ${prof.foto}}"
+                   alt="Foto"
+                   style="width:130px;height:130px;border-radius:50%;object-fit:cover;margin-bottom:15px;border:3px solid #8A2BE2;">
+              <img th:unless="${prof.foto != null}"
+                   th:src="${prof.tipo == 'treinador'} ? 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&q=80' : 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&q=80'"
+                   alt="Foto"
+                   style="width:130px;height:130px;border-radius:50%;object-fit:cover;margin-bottom:15px;border:3px solid #8A2BE2;">
+              <h3 th:text="${prof.nome}"></h3>
+              <p style="color:#8A2BE2;font-weight:bold;text-transform:uppercase;margin:5px 0;"
+                 th:text="${prof.tipo == 'treinador'} ? 'TREINADOR' : 'NUTRICIONISTA'"></p>
+              <p style="font-size:0.9em;color:#888;margin-bottom:15px;"
+                 th:text="${prof.tipo == 'treinador'} ? 'Especialista em Performance' : 'Nutrição Esportiva'"></p>
+
+              <!-- Botões para aluno logado -->
+              <div th:if="${estaLogado and usuario.tipo == 'aluno'}">
+
+                <!-- Já é meu treinador -->
+                <span th:if="${prof.tipo == 'treinador' and usuario.meuTreinadorId == prof.id}"
+                      class="badge-escolhido">✅ Seu Treinador</span>
+
+                <!-- Já é meu nutricionista -->
+                <span th:if="${prof.tipo == 'nutricionista' and usuario.meuNutricionistaId == prof.id}"
+                      class="badge-escolhido">✅ Seu Nutricionista</span>
+
+                <!-- Pode escolher treinador -->
+                <button th:if="${prof.tipo == 'treinador' and usuario.meuTreinadorId != prof.id}"
+                        th:data-id="${prof.id}"
+                        th:data-tipo="${prof.tipo}"
+                        onclick="escolherProfissional(this.dataset.id, this.dataset.tipo)"
+                        class="btn"
+                        style="padding:10px 20px;font-size:0.9rem;background-color:#8A2BE2;color:white;border:none;border-radius:5px;cursor:pointer;">
+                  Escolher
+                </button>
+
+                <!-- Pode escolher nutricionista -->
+                <button th:if="${prof.tipo == 'nutricionista' and usuario.meuNutricionistaId != prof.id}"
+                        th:data-id="${prof.id}"
+                        th:data-tipo="${prof.tipo}"
+                        onclick="escolherProfissional(this.dataset.id, this.dataset.tipo)"
+                        class="btn"
+                        style="padding:10px 20px;font-size:0.9rem;background-color:#8A2BE2;color:white;border:none;border-radius:5px;cursor:pointer;">
+                  Escolher
+                </button>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="calculo" class="section section-dark">
+    <div class="container">
+      <h2>Calculadora de Saúde Física</h2>
+      <p>Insira seus dados abaixo para uma avaliação inicial baseada no seu IMC.</p>
+      <form id="calc-form" class="calc-form"
+            th:attr="data-logado=${estaLogado},data-link=${estaLogado ? (usuario.tipo == 'aluno' ? '/aluno/painel' : '/treinador/painel') : '#'}">
+        <div class="form-group">
+          <label for="peso">Peso (kg)</label>
+          <input type="number" id="peso" step="0.1" placeholder="Ex: 75.5" required>
+        </div>
+        <div class="form-group">
+          <label for="altura">Altura (cm)</label>
+          <input type="number" id="altura" placeholder="Ex: 180" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Calcular Agora</button>
+      </form>
+      <div id="resultado" class="resultado hidden"></div>
+    </div>
+  </section>
+
+  <section id="sobre-nos" class="section">
+    <div class="container">
+      <h2>Sobre a Life Fit</h2>
+      <p>Fundada em 2025, Life Fit nasceu com a missão de democratizar o acesso à saúde e ao bem-estar.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <p>&copy; 2025 Life Fit. Todos os direitos reservados.</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script th:src="@{/script.js}"></script>
+<script th:src="@{/theme-toggle.js}"></script>
+<script th:inline="javascript">
+  const csrfToken = [[${_csrf.token}]];
+  const csrfHeader = [[${_csrf.headerName}]];
+
+  var swiper = new Swiper(".mySwiper", {
+    slidesPerView: 1, spaceBetween: 20,
+    pagination: { el: ".swiper-pagination", clickable: true },
+    navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+    breakpoints: {
+      640: { slidesPerView: 2, spaceBetween: 20 },
+      1024: { slidesPerView: 3, spaceBetween: 30 }
+    }
+  });
+
+  function escolherProfissional(idProfissional, tipoProfissional) {
+    if (!confirm("Deseja escolher este profissional como seu " + tipoProfissional + "?")) return;
+
+    const params = new URLSearchParams({ id_profissional: idProfissional, tipo_profissional: tipoProfissional });
+    const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+    headers[csrfHeader] = csrfToken;
+
+    fetch('/api/escolher-profissional', { method: 'POST', headers: headers, body: params })
+            .then(res => res.json())
+            .then(data => {
+              alert(data.status === 'success' ? data.message : "Erro: " + data.message);
+              if (data.status === 'success') location.reload();
+            })
+            .catch(err => console.error(err));
+  }
+</script>
+</html>

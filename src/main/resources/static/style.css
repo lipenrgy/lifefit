@@ -1,0 +1,504 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+/* 1. DEFINIÇÃO DAS CORES (VARIÁVEIS) */
+:root {
+    --violeta: #8A2BE2;
+    --fundo-primario: #F5F5F5;      /* Fundo principal claro */
+    --fundo-secundario: #FFFFFF;    /* Fundo de cards, modais, cabeçalhos */
+    --texto-primario: #333333;      /* Texto principal escuro */
+    --texto-secundario: #555555;    /* Texto mais suave */
+    --texto-botao: #FFFFFF;
+    --fundo-botao-escuro: #333333;
+    --borda: #ccc;
+    --sombra: 0 4px 8px rgba(0,0,0,0.1);
+    --btn-icon-hover: #e0e0e0;
+
+    /* Cores de resultado */
+    --resultado-bom: #28a745;
+    --resultado-medio: #ffc107;
+    --resultado-ruim: #dc3545;
+}
+
+/* 2. DEFINIÇÃO DAS CORES DO MODO ESCURO */
+/* Corrigido para html.dark-mode para funcionar com o script da <head> */
+html.dark-mode {
+    --fundo-primario: #121212;      /* Fundo principal escuro */
+    --fundo-secundario: #1e1e1e;    /* Fundo de cards, modais, cabeçalhos */
+    --texto-primario: #eaeaea;      /* Texto principal claro */
+    --texto-secundario: #bbbbbb;    /* Texto mais suave */
+    --texto-botao: #eaeaea;
+    --fundo-botao-escuro: #444;
+    --borda: #444;
+    --sombra: 0 4px 8px rgba(0,0,0,0.3);
+    --btn-icon-hover: #333;
+}
+
+html.dark-mode .lista-alunos li:hover,
+html.dark-mode .lista-alunos li.active {
+    background-color: #3f304d;
+}
+
+/* 3. APLICAÇÃO GLOBAL E RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--fundo-primario);
+    color: var(--texto-primario);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.section {
+    padding: 30px 0;
+}
+
+.section-dark {
+    background-color: var(--fundo-secundario);
+}
+
+h1,
+h2,
+h3 {
+    color: var(--violeta);
+    margin-bottom: 20px;
+}
+
+h2 {
+    text-align: center;
+    font-size: 2.5rem;
+}
+
+/* 4. BOTÕES (Toggle e Padrão) */
+.btn-icon {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--texto-secundario);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.btn-icon:hover {
+    background-color: var(--btn-icon-hover);
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--fundo-botao-escuro);
+    color: var(--texto-botao);
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #555;
+}
+
+.btn-primary {
+    background-color: var(--violeta);
+    color: #FFFFFF; /* Botão primário com texto branco sempre */
+}
+
+.btn-primary:hover {
+    background-color: #701db0;
+}
+
+/* 5. NAVBAR */
+.navbar {
+    background-color: var(--fundo-secundario);
+    box-shadow: var(--sombra);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    padding: 15px 0;
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--violeta);
+    text-decoration: none;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--texto-primario);
+    font-weight: 600;
+    transition: color 0.3s;
+}
+/* Adicione isso para alinhar o botão e o login lado a lado */
+.nav-actions {
+    display: flex;       /* Transforma em uma linha flexível */
+    align-items: center; /* Centraliza verticalmente */
+    gap: 15px;           /* Espaço entre o botão de tema, o login e o ícone */
+}
+
+.nav-links a:hover {
+    color: var(--violeta);
+}
+
+/* 6. ÍCONE DE USUÁRIO E DROPDOWN */
+.user-icon {
+    position: relative;
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--fundo-secundario);
+    border-radius: 5px;
+    box-shadow: var(--sombra);
+    min-width: 160px;
+    overflow: hidden;
+}
+
+.user-icon:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a {
+    color: var(--texto-primario);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.2s;
+}
+
+.dropdown-menu a:hover {
+    background-color: var(--fundo-primario);
+}
+
+/* 7. SEÇÃO HERO */
+.hero {
+    background-color: var(--fundo-primario);
+    padding-top: 120px;
+    min-height: 80vh;
+}
+
+.hero-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.hero-text {
+    flex: 1;
+}
+
+.hero-text h1 {
+    font-size: 3.5rem;
+    line-height: 1.2;
+}
+
+.hero-text p {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    color: var(--texto-secundario);
+}
+
+.hero-image {
+    flex: 1;
+    text-align: center;
+}
+
+.hero-image img {
+    max-width: 100%;
+    border-radius: 10px;
+}
+
+/* 8. SEÇÃO TREINADORES */
+.trainers-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+}
+
+.trainer-card {
+    background-color: var(--fundo-secundario);
+    border-radius: 10px;
+    box-shadow: var(--sombra);
+    text-align: center;
+    padding: 20px;
+    width: 250px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.trainer-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.trainer-card img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+/* 9. SEÇÃO CÁLCULO */
+.calc-form {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.calc-form .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.calc-form .form-group label {
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.calc-form .form-group input {
+    padding: 10px;
+    border: 1px solid var(--borda);
+    border-radius: 5px;
+    width: 200px;
+    background-color: var(--fundo-primario);
+    color: var(--texto-primario);
+}
+
+/* 10. DIV DE RESULTADO */
+.resultado {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: var(--fundo-secundario);
+    border-radius: 5px;
+    text-align: center;
+    border-left: 5px solid var(--violeta);
+}
+
+.resultado.bom {
+    border-left-color: var(--resultado-bom);
+}
+
+.resultado.medio {
+    border-left-color: var(--resultado-medio);
+}
+
+.resultado.ruim {
+    border-left-color: var(--resultado-ruim);
+}
+
+.hidden {
+    display: none;
+}
+
+/* 11. ESTILOS DO MODAL */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: var(--fundo-secundario);
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    width: 90%;
+    max-width: 850px;
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--texto-secundario);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close-modal:hover {
+    color: var(--texto-primario);
+}
+
+.acesso-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.form-container {
+    padding: 10px;
+    flex: 1;
+    min-width: 300px;
+}
+
+.form-container h2 {
+    text-align: left;
+    font-size: 1.8rem;
+}
+
+.form-container .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.form-container .form-group label {
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.form-container .form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--borda);
+    border-radius: 5px;
+    background-color: var(--fundo-primario);
+    color: var(--texto-primario);
+}
+
+.form-container button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+}
+
+/* 12. RODAPÉ */
+footer {
+    background-color: var(--fundo-botao-escuro);
+    color: var(--texto-botao);
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+}
+/* --- ESTILO DO BOTÃO SWITCH (TEMA) --- */
+
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+    margin-right: 15px; /* Espaço entre o switch e o botão de Login */
+}
+
+.theme-switch {
+    display: inline-block;
+    height: 34px;
+    position: relative;
+    width: 60px;
+}
+
+.theme-switch input {
+    display: none; /* Esconde a caixa de seleção padrão feia */
+}
+
+.slider {
+    background-color: #ccc; /* Cor do fundo quando desligado (Light Mode) */
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s; /* Suavidade da animação */
+    border-radius: 34px; /* Deixa arredondado */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+}
+
+/* A bolinha que se move */
+.slider:before {
+    background-color: #fff;
+    bottom: 4px;
+    content: "";
+    height: 26px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    width: 26px;
+    border-radius: 50%;
+    z-index: 2; /* Garante que a bolinha fique por cima dos ícones */
+}
+
+/* Quando o input estiver marcado (Dark Mode Ativo) */
+input:checked + .slider {
+    background-color: var(--violeta); /* Usa a sua cor roxa */
+}
+
+/* Move a bolinha para a direita quando marcado */
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* Ícones dentro do botão */
+.icon-sun, .icon-moon {
+    font-size: 14px;
+    z-index: 1;
+    user-select: none;
+}
+
+.icon-sun {
+    margin-left: 2px;
+}
+
+.icon-moon {
+    margin-right: 2px;
+}
