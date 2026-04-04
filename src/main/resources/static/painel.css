@@ -56,77 +56,78 @@ body {
 /* 5. CABEÇALHO DO PAINEL */
 .painel-header {
     background-color: var(--fundo-secundario);
-    padding: 15px 30px;
-    box-shadow: var(--sombra);
+    margin: 16px auto;
+    padding: 12px 28px;
+    border-radius: 50px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    max-width: 1100px;
+    width: calc(100% - 60px);
+    position: sticky;
+    top: 16px;
+    z-index: 1000;
+    transition: box-shadow 0.3s;
+}
+
+html.dark-mode .painel-header {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .painel-header h1 {
     color: var(--violeta);
-    font-size: 1.8rem;
+    font-size: 1.4rem;
     margin: 0;
 }
 
-/* Controles do cabeçalho (Botão de tema e menu de usuário) */
 .header-controls {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-/* --- ESTILO DO BOTÃO SAIR (CORRIGIDO) --- */
-
-.btn-sair {
-    /* Faz o botão ocupar a largura do menu, igual aos outros links */
-    display: block;
-    width: 100%;
-    padding: 12px 16px; /* Ajuste para ficar igual aos links de cima */
-
-    /* Tira o estilo de "botão" fixo */
-    border: none;
-    border-radius: 0;
-
-    /* AQUI ESTÁ O SEGREDO: Fundo transparente por padrão */
-    background-color: transparent;
-    color: var(--texto-primario); /* Usa a cor do texto do tema */
-
-    /* Uma linha fina em cima para separar */
-    border-top: 1px solid var(--borda);
-
-    text-decoration: none;
-    text-align: left; /* Garante que o texto fique alinhado à esquerda */
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-/* Só fica vermelho quando o mouse passa por cima */
-/* Só fica vermelho quando o mouse passa por cima */
-.btn-sair:hover {
-    background-color: #dc3545 !important; /* O !important obriga a ser vermelho */
-    color: #ffffff !important; /* O !important obriga o texto a ser branco */
-}
-
 /* 6. MENU DROPDOWN DO USUÁRIO */
 .user-icon-painel {
     position: relative;
     cursor: pointer;
-    font-size: 1.8rem;
-    color: var(--texto-secundario);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 55px;
+}
+
+.user-icon-painel span {
+    font-size: 2.2rem;
+}
+
+/* Ponte invisível para não perder o hover */
+.user-icon-painel::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 100%;
+    height: 15px;
 }
 
 .user-icon-painel .dropdown-menu {
     display: none;
     position: absolute;
-    top: 100%;
+    top: calc(100% + 10px);
     right: 0;
     background-color: var(--fundo-secundario);
-    border-radius: 5px;
-    box-shadow: var(--sombra);
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     min-width: 180px;
+    z-index: 100;
+    padding: 8px 0;
+    border: 1px solid var(--borda);
     overflow: hidden;
-    z-index: 10;
+}
+
+html.dark-mode .user-icon-painel .dropdown-menu {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
 }
 
 .user-icon-painel:hover .dropdown-menu {
@@ -135,16 +136,38 @@ body {
 
 .user-icon-painel .dropdown-menu a {
     color: var(--texto-primario);
-    padding: 12px 16px;
+    padding: 12px 20px;
     text-decoration: none;
     display: block;
+    font-size: 0.95rem;
     transition: background-color 0.2s;
 }
 
 .user-icon-painel .dropdown-menu a:hover {
-    background-color: var(--fundo-primario);
+    background-color: rgba(138,43,226,0.1);
+    color: #8A2BE2;
 }
 
+.btn-sair {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    border: none;
+    border-top: 1px solid var(--borda);
+    background-color: transparent;
+    color: var(--texto-primario);
+    text-decoration: none;
+    text-align: left;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    box-sizing: border-box;
+}
+
+.btn-sair:hover {
+    background-color: rgba(220,53,69,0.12) !important;
+    color: #dc3545 !important;
+}
 /* 7. LAYOUT PAINEL TREINADOR */
 .painel-container {
     display: flex;
