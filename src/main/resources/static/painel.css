@@ -1,65 +1,50 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
-/* 1. DEFINIÇÃO DAS CORES (VARIÁVEIS) */
+/* ===================== VARIÁVEIS ===================== */
 :root {
     --violeta: #8A2BE2;
-    --fundo-primario: #F5F5F5;
+    --violeta-escuro: #6a1b9a;
+    --violeta-claro: #f0e6ff;
+    --fundo-primario: #F8F7FF;
     --fundo-secundario: #FFFFFF;
-    --texto-primario: #333333;
-    --texto-secundario: #555555;
-    --borda: #ccc;
-    --sombra: 0 4px 8px rgba(0, 0, 0, 0.1);
-    --btn-icon-hover: #e0e0e0;
+    --texto-primario: #1a1a2e;
+    --texto-secundario: #555577;
+    --borda: #e0d8f0;
+    --sombra: 0 4px 24px rgba(138,43,226,0.08);
+    --sombra-hover: 0 8px 32px rgba(138,43,226,0.16);
+    --btn-icon-hover: #f0e6ff;
 }
 
-/* 2. DEFINIÇÃO DAS CORES DO MODO ESCURO */
-/* Usamos html.dark-mode para funcionar com o script da <head> */
 html.dark-mode {
-    --fundo-primario: #121212;
-    --fundo-secundario: #1e1e1e;
-    --texto-primario: #eaeaea;
-    --texto-secundario: #bbbbbb;
-    --borda: #444;
-    --sombra: 0 4px 8px rgba(0, 0, 0, 0.3);
-    --btn-icon-hover: #333;
-}
-html.dark-mode .lista-alunos li:hover,
-html.dark-mode .lista-alunos li.active {
-    background-color: #3f304d;
+    --fundo-primario: #0d0d1a;
+    --fundo-secundario: #16162a;
+    --texto-primario: #f0eeff;
+    --texto-secundario: #9999bb;
+    --borda: #2a2a44;
+    --sombra: 0 4px 24px rgba(0,0,0,0.3);
+    --sombra-hover: 0 8px 32px rgba(138,43,226,0.2);
+    --btn-icon-hover: #2a1a44;
+    --violeta-claro: #1a0a2e;
 }
 
-/* 3. APLICAÇÃO GLOBAL E RESET */
+/* ===================== RESET ===================== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--fundo-primario);
     color: var(--texto-primario);
-    margin: 0;
-    padding: 0;
+    line-height: 1.6;
 }
 
-/* 4. BOTÃO DE ÍCONE (Toggle) */
-.btn-icon {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: var(--texto-secundario);
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    transition: background-color 0.2s;
-}
-
-.btn-icon:hover {
-    background-color: var(--btn-icon-hover);
-}
-
-/* 5. CABEÇALHO DO PAINEL */
+/* ===================== HEADER DO PAINEL ===================== */
 .painel-header {
     background-color: var(--fundo-secundario);
     margin: 16px auto;
     padding: 12px 28px;
     border-radius: 50px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    box-shadow: var(--sombra);
+    border: 1px solid var(--borda);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -71,468 +56,565 @@ body {
     transition: box-shadow 0.3s;
 }
 
-html.dark-mode .painel-header {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-}
+html.dark-mode .painel-header { box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
 
 .painel-header h1 {
     color: var(--violeta);
-    font-size: 1.4rem;
+    font-size: 1.3rem;
+    font-weight: 700;
     margin: 0;
 }
 
-.header-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+.header-controls { display: flex; align-items: center; gap: 12px; }
 
-/* 6. MENU DROPDOWN DO USUÁRIO */
+/* ===================== DROPDOWN PAINEL ===================== */
 .user-icon-painel {
     position: relative;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 55px;
+    height: 48px;
 }
 
-.user-icon-painel span {
-    font-size: 2.2rem;
-}
-
-/* Ponte invisível para não perder o hover */
 .user-icon-painel::after {
     content: '';
     position: absolute;
-    top: 100%;
-    right: 0;
-    width: 100%;
-    height: 15px;
+    top: 100%; right: 0;
+    width: 100%; height: 15px;
 }
+
+.user-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--violeta);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.user-avatar:hover { transform: scale(1.08); }
+.user-icon-painel span { font-size: 2rem; }
 
 .user-icon-painel .dropdown-menu {
     display: none;
     position: absolute;
-    top: calc(100% + 10px);
+    top: calc(100% + 12px);
     right: 0;
     background-color: var(--fundo-secundario);
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    min-width: 180px;
+    border-radius: 16px;
+    box-shadow: var(--sombra-hover);
+    min-width: 190px;
     z-index: 100;
     padding: 8px 0;
     border: 1px solid var(--borda);
     overflow: hidden;
 }
 
-html.dark-mode .user-icon-painel .dropdown-menu {
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-}
-
-.user-icon-painel:hover .dropdown-menu {
-    display: block;
-}
+.user-icon-painel:hover .dropdown-menu { display: block; }
 
 .user-icon-painel .dropdown-menu a {
     color: var(--texto-primario);
-    padding: 12px 20px;
+    padding: 11px 20px;
     text-decoration: none;
     display: block;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     transition: background-color 0.2s;
 }
 
 .user-icon-painel .dropdown-menu a:hover {
-    background-color: rgba(138,43,226,0.1);
-    color: #8A2BE2;
+    background-color: var(--violeta-claro);
+    color: var(--violeta);
 }
 
 .btn-sair {
-    display: block;
-    width: 100%;
-    padding: 12px 20px;
-    border: none;
-    border-top: 1px solid var(--borda);
+    display: block; width: 100%;
+    padding: 11px 20px;
+    border: none; border-top: 1px solid var(--borda);
     background-color: transparent;
     color: var(--texto-primario);
-    text-decoration: none;
-    text-align: left;
-    font-size: 0.95rem;
+    text-align: left; font-size: 0.9rem;
+    font-family: 'Poppins', sans-serif;
     cursor: pointer;
     transition: background-color 0.2s, color 0.2s;
     box-sizing: border-box;
 }
+.btn-sair:hover { background-color: rgba(220,53,69,0.08) !important; color: #dc3545 !important; }
 
-.btn-sair:hover {
-    background-color: rgba(220,53,69,0.12) !important;
-    color: #dc3545 !important;
+/* ===================== BOTÃO HOME ===================== */
+.btn-home {
+    display: flex; align-items: center;
+    color: var(--texto-secundario);
+    text-decoration: none;
+    transition: color 0.2s;
+    padding: 6px;
+    border-radius: 50%;
+    transition: background 0.2s;
 }
-/* 7. LAYOUT PAINEL TREINADOR */
+.btn-home:hover { background: var(--violeta-claro); color: var(--violeta); }
+.btn-home svg { width: 22px; height: 22px; }
+
+/* ===================== TEMA SWITCH ===================== */
+.theme-switch-wrapper { display: flex; align-items: center; }
+.theme-switch { display: inline-block; height: 30px; position: relative; width: 54px; }
+.theme-switch input { display: none; }
+
+.slider {
+    background-color: #ddd;
+    bottom: 0; cursor: pointer; left: 0;
+    position: absolute; right: 0; top: 0;
+    transition: .3s; border-radius: 34px;
+    display: flex; align-items: center;
+    justify-content: space-between; padding: 0 5px;
+}
+.slider:before {
+    background-color: #fff; bottom: 3px; content: "";
+    height: 24px; left: 3px; position: absolute;
+    transition: .3s; width: 24px; border-radius: 50%; z-index: 2;
+}
+input:checked + .slider { background-color: var(--violeta); }
+input:checked + .slider:before { transform: translateX(24px); }
+.icon-sun, .icon-moon { font-size: 12px; z-index: 1; user-select: none; }
+.icon-sun { margin-left: 2px; }
+.icon-moon { margin-right: 2px; }
+
+/* ===================== PAINEL TREINADOR ===================== */
 .painel-container {
-    display: flex;
-    gap: 30px;
-    padding: 30px;
-    max-width: 1200px;
-    margin: 20px auto;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+    padding: 24px 30px;
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
 .lista-alunos {
-    flex: 1;
     background-color: var(--fundo-secundario);
-    padding: 20px;
-    border-radius: 8px;
+    border-radius: 20px;
+    border: 1px solid var(--borda);
     box-shadow: var(--sombra);
     height: fit-content;
+    overflow: hidden;
 }
 
 .lista-alunos h2 {
     color: var(--violeta);
-    margin-top: 0;
-    border-bottom: 2px solid var(--fundo-primario);
-    padding-bottom: 10px;
-}
-
-.lista-alunos ul {
-    list-style: none;
-    padding: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--borda);
     margin: 0;
 }
 
+.lista-alunos ul { list-style: none; padding: 8px 0; margin: 0; }
+
 .lista-alunos li {
-    padding: 12px;
-    border-bottom: 1px solid var(--fundo-primario);
+    padding: 12px 20px;
     cursor: pointer;
     transition: background-color 0.2s;
+    font-size: 0.9rem;
+    color: var(--texto-secundario);
+    border-left: 3px solid transparent;
 }
 
-.lista-alunos li:hover,
+.lista-alunos li:hover { background-color: var(--violeta-claro); color: var(--violeta); }
 .lista-alunos li.active {
-    background-color: #e9d8f8;
-}
-
-/* Regra específica para o hover/active no modo escuro */
-html.dark-mode .lista-alunos li:hover,
-html.dark-mode .lista-alunos li.active {
-    background-color: #3f304d;
+    background-color: var(--violeta-claro);
+    color: var(--violeta);
+    font-weight: 600;
+    border-left-color: var(--violeta);
 }
 
 .area-plano {
-    flex: 2;
     background-color: var(--fundo-secundario);
-    padding: 20px;
-    border-radius: 8px;
+    border-radius: 20px;
+    border: 1px solid var(--borda);
     box-shadow: var(--sombra);
+    padding: 28px;
 }
 
-.area-plano h2 {
-    color: var(--violeta);
-    margin-top: 0;
-}
+.area-plano h2 { color: var(--violeta); font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; }
 
 .area-plano form textarea {
-    width: 100%;
-    min-height: 200px;
-    margin-bottom: 15px;
-    padding: 10px;
-    border: 1px solid var(--borda);
-    border-radius: 5px;
+    width: 100%; min-height: 220px;
+    margin-bottom: 16px; padding: 14px 16px;
+    border: 1.5px solid var(--borda);
+    border-radius: 14px;
     font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
     resize: vertical;
     background-color: var(--fundo-primario);
     color: var(--texto-primario);
+    outline: none;
+    transition: border-color 0.2s;
 }
+.area-plano form textarea:focus { border-color: var(--violeta); }
 
 .area-plano form button {
-    padding: 12px 25px;
-    border: none;
-    border-radius: 5px;
-    background-color: var(--violeta);
-    color: #FFFFFF;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    padding: 12px 28px; border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, var(--violeta), var(--violeta-escuro));
+    color: white; font-size: 0.95rem;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600; cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(138,43,226,0.3);
 }
+.area-plano form button:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(138,43,226,0.4); }
 
-.area-plano form button:hover {
-    background-color: #701db0;
-}
+#form-plano.hidden { display: none; }
 
-#form-plano.hidden {
-    display: none;
-}
-
-/* 8. LAYOUT PAINEL ALUNO */
+/* ===================== PAINEL ALUNO ===================== */
 .painel-container-aluno {
-    max-width: 900px;
-    margin: 20px auto;
-    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 24px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .plano-display {
     background-color: var(--fundo-secundario);
-    padding: 25px;
-    border-radius: 8px;
+    padding: 28px;
+    border-radius: 20px;
+    border: 1px solid var(--borda);
     box-shadow: var(--sombra);
-    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.plano-display::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--violeta), #c084fc);
 }
 
 .plano-display h2 {
     color: var(--violeta);
-    margin-top: 0;
-    border-bottom: 2px solid var(--fundo-primario);
-    padding-bottom: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .plano-conteudo {
     white-space: pre-wrap;
-    line-height: 1.7;
-    font-size: 1rem;
+    line-height: 1.8;
+    font-size: 0.92rem;
     color: var(--texto-secundario);
+    min-height: 60px;
 }
-/* --- ESTILO DO BOTÃO SWITCH (TEMA) PARA O PAINEL --- */
 
-.theme-switch-wrapper {
+/* ===================== CHAT ===================== */
+.chat-page { overflow: hidden; }
+
+.chat-container {
+    display: flex;
+    height: calc(100vh - 88px);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 30px 24px;
+    gap: 20px;
+}
+
+.chat-sidebar {
+    width: 280px;
+    min-width: 280px;
+    background-color: var(--fundo-secundario);
+    border-radius: 20px;
+    border: 1px solid var(--borda);
+    box-shadow: var(--sombra);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sidebar-header {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--borda);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--texto-primario);
+}
+
+.contacts-list { flex: 1; overflow-y: auto; }
+
+.contact-item {
     display: flex;
     align-items: center;
-    /* Removemos a margem direita fixa para se ajustar ao flexbox do header-controls */
-}
-
-.theme-switch {
-    display: inline-block;
-    height: 34px;
-    position: relative;
-    width: 60px;
-}
-
-.theme-switch input {
-    display: none;
-}
-
-.slider {
-    background-color: #ccc;
-    bottom: 0;
+    gap: 12px;
+    padding: 14px 16px;
     cursor: pointer;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-    transition: .4s;
-    border-radius: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 5px;
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+    border-bottom: 1px solid var(--borda);
+    transition: background 0.2s;
 }
-
-.slider:before {
-    background-color: #fff;
-    bottom: 4px;
-    content: "";
-    height: 26px;
-    left: 4px;
-    position: absolute;
-    transition: .4s;
-    width: 26px;
-    border-radius: 50%;
-    z-index: 2;
+.contact-item:hover, .contact-item.active {
+    background-color: var(--violeta-claro);
 }
+.contact-item.active { border-left: 3px solid var(--violeta); }
 
-input:checked + .slider {
-    background-color: var(--violeta);
-}
-
-input:checked + .slider:before {
-    transform: translateX(26px);
-}
-
-.icon-sun, .icon-moon {
-    font-size: 14px;
-    z-index: 1;
-    user-select: none;
-}
-
-.icon-sun { margin-left: 2px; }
-.icon-moon { margin-right: 2px; }
-
-
-
-/* Fundo escuro atrás da janela */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7); /* Fundo preto transparente */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-}
-
-/* A janela em si */
-.modal-content {
-    background: var(--fundo-secundario, #1f1f1f); /* Usa tua cor escura */
-    padding: 30px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    border: 1px solid #333;
-    color: var(--texto-primario, #fff);
-    position: relative;
-}
-
-/* Quando a classe 'open' é adicionada via JS, o modal aparece */
-.modal-overlay.open {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Botão de fechar (X) */
-.close-modal {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    cursor: pointer;
-    color: #888;
-}
-.close-modal:hover { color: #fff; }
-
-/* Estilo do input de arquivo */
-.file-upload-wrapper {
-    margin: 20px 0;
-    border: 2px dashed #444;
-    padding: 20px;
-    border-radius: 8px;
-}
-/* Fundo escuro atrás da janela */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7); /* Fundo preto transparente */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-}
-
-/* A janela em si */
-.modal-content {
-    background: var(--fundo-secundario, #1f1f1f); /* Usa tua cor escura */
-    padding: 30px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    border: 1px solid #333;
-    color: var(--texto-primario, #fff);
-    position: relative;
-}
-
-/* Quando a classe 'open' é adicionada via JS, o modal aparece */
-.modal-overlay.open {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Botão de fechar (X) */
-.close-modal {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    cursor: pointer;
-    color: #888;
-}
-.close-modal:hover { color: #fff; }
-
-/* Estilo do input de arquivo */
-.file-upload-wrapper {
-    margin: 20px 0;
-    border: 2px dashed #444;
-    padding: 20px;
-    border-radius: 8px;
-}
-/* --- FOTO DE PERFIL NO HEADER (ATUALIZADO) --- */
-
-/* Estilo da imagem redonda */
-.user-avatar {
-    width: 55px;        /* Aumentei de 40px para 55px */
-    height: 55px;       /* Aumentei de 40px para 55px */
-    border-radius: 50%;
-    object-fit: cover;
+.contact-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%; object-fit: cover;
     border: 2px solid var(--violeta);
-    cursor: pointer;
-    vertical-align: middle;
-    transition: transform 0.2s; /* Efeito suave ao passar o mouse */
+    flex-shrink: 0;
 }
 
-.user-avatar:hover {
-    transform: scale(1.1); /* Um pequeno zoom quando passa o mouse */
+.contact-info h4 { margin: 0 0 2px; font-size: 0.9rem; color: var(--texto-primario); font-weight: 600; }
+.contact-info p { margin: 0; font-size: 0.76rem; color: var(--texto-secundario); text-transform: capitalize; }
+
+.chat-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--fundo-secundario);
+    border-radius: 20px;
+    border: 1px solid var(--borda);
+    box-shadow: var(--sombra);
+    overflow: hidden;
+    min-width: 0;
 }
 
-/* Ajuste para alinhar o ícone/foto com o dropdown */
-.user-icon-painel {
+.chat-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--borda);
+    background-color: var(--fundo-secundario);
+    display: flex; align-items: center;
+    min-height: 64px;
+}
+.chat-header h3 { margin: 0; font-size: 1rem; font-weight: 700; color: var(--texto-primario); }
+
+.chat-messages {
+    flex: 1; padding: 20px 24px;
+    overflow-y: auto;
+    background-color: var(--fundo-primario);
+    display: flex; flex-direction: column; gap: 10px;
+}
+
+.message {
+    max-width: 62%;
+    padding: 11px 16px;
+    border-radius: 18px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+.message.sent {
+    align-self: flex-end;
+    background: linear-gradient(135deg, var(--violeta), var(--violeta-escuro));
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.message.received {
+    align-self: flex-start;
+    background-color: var(--fundo-secundario);
+    color: var(--texto-primario);
+    border: 1px solid var(--borda);
+    border-bottom-left-radius: 4px;
+}
+
+.message-time { font-size: 0.68rem; opacity: 0.65; text-align: right; margin-top: 4px; }
+
+.chat-input-area {
+    padding: 16px 20px;
+    border-top: 1px solid var(--borda);
+    display: flex; gap: 10px; align-items: center;
+    background-color: var(--fundo-secundario);
+}
+
+.chat-input-area input[type="text"] {
+    flex: 1; padding: 12px 18px;
+    border-radius: 50px;
+    border: 1.5px solid var(--borda);
+    background-color: var(--fundo-primario);
+    color: var(--texto-primario);
+    font-size: 0.92rem;
+    font-family: 'Poppins', sans-serif;
+    outline: none; transition: border-color 0.2s;
+}
+.chat-input-area input[type="text"]:focus { border-color: var(--violeta); }
+
+.btn-enviar {
+    background: linear-gradient(135deg, var(--violeta), var(--violeta-escuro));
+    color: white; border: none;
+    width: 44px; height: 44px;
+    border-radius: 50%; cursor: pointer;
+    font-size: 1rem; display: flex;
+    align-items: center; justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(138,43,226,0.3);
+}
+.btn-enviar:hover { transform: scale(1.1); box-shadow: 0 6px 16px rgba(138,43,226,0.4); }
+
+.empty-state {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    height: 100%; color: var(--texto-secundario);
+    opacity: 0.5; text-align: center; gap: 8px;
+}
+
+/* ===================== CONFIGURAÇÕES ===================== */
+.config-page {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 24px 30px;
+}
+
+.config-card {
+    background-color: var(--fundo-secundario);
+    border-radius: 20px;
+    border: 1px solid var(--borda);
+    box-shadow: var(--sombra);
+    padding: 32px;
+    margin-bottom: 20px;
+}
+
+.config-card-header {
     display: flex;
     align-items: center;
-    justify-content: center;
-    height: 55px; /* Garante que o container tenha a mesma altura */
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--borda);
 }
 
-/* Aumentei também o bonequinho padrão caso não tenha foto */
-.user-icon-painel span {
-    font-size: 2.2rem; /* Aumentei de 1.8rem para 2.2rem */
+.config-card-icon {
+    width: 44px; height: 44px;
+    background: var(--violeta-claro);
+    border-radius: 12px;
+    display: flex; align-items: center;
+    justify-content: center; font-size: 1.3rem;
+    flex-shrink: 0;
 }
 
-
-/* --- Botão Home (Casinha) --- */
-
-/* 1. Comportamento padrão (Modo Claro) -> Cor escura */
-.btn-home {
-    display: flex;
-    align-items: center;
-    color: #333333; /* Cinza escuro para aparecer no fundo branco */
-    text-decoration: none;
-    transition: color 0.3s ease;
-    margin-right: 15px; /* Espaço para não grudar nos outros ícones */
+.config-card-header h2 {
+    font-size: 1rem; font-weight: 700;
+    color: var(--texto-primario); margin: 0;
+}
+.config-card-header p {
+    font-size: 0.82rem;
+    color: var(--texto-secundario); margin: 2px 0 0;
 }
 
-/* 2. Comportamento quando o Modo Escuro está ativado -> Cor branca */
-html.dark-mode .btn-home {
-    color: #ffffff; /* Branco para aparecer no fundo preto */
-}
-
-/* 3. Quando passa o mouse -> Cor roxa (igual nos dois modos) */
-.btn-home:hover {
-    color: #9b5de5;
-}
-
-/* Ajuste do tamanho do ícone */
-.btn-home svg {
-    width: 24px;
-    height: 24px;
-}
-
-.plano-conteudo {
-    white-space: pre-wrap;
-    line-height: 1.7;
-    font-size: 1rem;
+.form-group { margin-bottom: 18px; }
+.form-group label {
+    display: block; margin-bottom: 7px;
+    font-size: 0.85rem; font-weight: 600;
     color: var(--texto-secundario);
-    /* 👇 Adicione esta linha aqui */
-    text-transform: capitalize;
 }
+
+.input-wrapper { position: relative; width: 100%; }
+
+.form-group input[type="text"],
+.form-group input[type="password"] {
+    width: 100%; padding: 12px 16px;
+    padding-right: 48px;
+    border: 1.5px solid var(--borda);
+    border-radius: 12px;
+    background-color: var(--fundo-primario);
+    color: var(--texto-primario);
+    font-size: 0.92rem;
+    font-family: 'Poppins', sans-serif;
+    outline: none; transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+.form-group input:focus { border-color: var(--violeta); }
+
+.toggle-eye {
+    position: absolute; right: 14px; top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer; font-size: 1.1rem;
+    user-select: none; opacity: 0.5;
+    transition: opacity 0.2s;
+}
+.toggle-eye:hover { opacity: 1; }
+
+.btn-salvar {
+    background: linear-gradient(135deg, var(--violeta), var(--violeta-escuro));
+    color: white; border: none;
+    padding: 13px 28px; border-radius: 50px;
+    cursor: pointer; font-size: 0.95rem;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600; width: 100%;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(138,43,226,0.3);
+}
+.btn-salvar:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(138,43,226,0.4); }
+
+.foto-perfil-area {
+    display: flex; align-items: center; gap: 20px; margin-bottom: 20px;
+}
+.foto-perfil-area img {
+    width: 72px; height: 72px; border-radius: 50%;
+    object-fit: cover; border: 2px solid var(--violeta); flex-shrink: 0;
+}
+.avatar-placeholder {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: var(--violeta-claro); border: 2px solid var(--violeta);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; flex-shrink: 0;
+}
+
+.foto-upload-label {
+    display: inline-block; padding: 9px 18px;
+    background: var(--violeta-claro); color: var(--violeta);
+    border-radius: 50px; cursor: pointer;
+    font-size: 0.85rem; font-weight: 600;
+    border: 1.5px solid rgba(138,43,226,0.3);
+    transition: all 0.2s;
+}
+.foto-upload-label:hover { background: var(--violeta); color: white; }
+
+.foto-nome-arquivo { font-size: 0.8rem; color: var(--texto-secundario); margin-top: 6px; }
+
+.btn-atualizar-foto {
+    background: transparent; color: var(--violeta);
+    border: 1.5px solid var(--violeta);
+    padding: 9px 18px; border-radius: 50px;
+    cursor: pointer; font-size: 0.85rem;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600; transition: all 0.2s;
+}
+.btn-atualizar-foto:hover { background: var(--violeta); color: white; }
+
+/* ===================== MODAL ===================== */
+.modal-overlay {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s;
+}
+.modal-overlay.open { opacity: 1; visibility: visible; }
+.modal-content {
+    background: var(--fundo-secundario); padding: 30px;
+    border-radius: 20px; width: 90%; max-width: 420px;
+    text-align: center; box-shadow: var(--sombra-hover);
+    border: 1px solid var(--borda); position: relative;
+}
+.close-modal {
+    position: absolute; top: 12px; right: 16px;
+    font-size: 1.4rem; cursor: pointer; color: var(--texto-secundario);
+    background: none; border: none; transition: color 0.2s;
+}
+.close-modal:hover { color: var(--texto-primario); }
+
+/* ===================== UTILITÁRIOS ===================== */
+.hidden { display: none; }
+.btn {
+    display: inline-block; padding: 11px 24px;
+    border: none; border-radius: 50px;
+    background: linear-gradient(135deg, var(--violeta), var(--violeta-escuro));
+    color: white; text-decoration: none;
+    font-weight: 600; font-size: 0.92rem;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(138,43,226,0.25);
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(138,43,226,0.35); }
