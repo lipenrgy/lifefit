@@ -1,130 +1,58 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
-/* 1. DEFINIÇÃO DAS CORES (VARIÁVEIS) */
+/* ===================== VARIÁVEIS ===================== */
 :root {
     --violeta: #8A2BE2;
-    --fundo-primario: #F5F5F5;      /* Fundo principal claro */
-    --fundo-secundario: #FFFFFF;    /* Fundo de cards, modais, cabeçalhos */
-    --texto-primario: #333333;      /* Texto principal escuro */
-    --texto-secundario: #555555;    /* Texto mais suave */
-    --texto-botao: #FFFFFF;
-    --fundo-botao-escuro: #333333;
-    --borda: #ccc;
-    --sombra: 0 4px 8px rgba(0,0,0,0.1);
-    --btn-icon-hover: #e0e0e0;
-
-    /* Cores de resultado */
+    --violeta-escuro: #6a1b9a;
+    --violeta-claro: #f0e6ff;
+    --fundo-primario: #F8F7FF;
+    --fundo-secundario: #FFFFFF;
+    --texto-primario: #1a1a2e;
+    --texto-secundario: #555577;
+    --borda: #e0d8f0;
+    --sombra: 0 4px 24px rgba(138,43,226,0.08);
+    --sombra-hover: 0 8px 32px rgba(138,43,226,0.16);
     --resultado-bom: #28a745;
     --resultado-medio: #ffc107;
     --resultado-ruim: #dc3545;
+    --btn-icon-hover: #f0e6ff;
+    --texto-botao: #FFFFFF;
+    --fundo-botao-escuro: #1a1a2e;
 }
 
-/* 2. DEFINIÇÃO DAS CORES DO MODO ESCURO */
-/* Corrigido para html.dark-mode para funcionar com o script da <head> */
 html.dark-mode {
-    --fundo-primario: #121212;      /* Fundo principal escuro */
-    --fundo-secundario: #1e1e1e;    /* Fundo de cards, modais, cabeçalhos */
-    --texto-primario: #eaeaea;      /* Texto principal claro */
-    --texto-secundario: #bbbbbb;    /* Texto mais suave */
-    --texto-botao: #eaeaea;
-    --fundo-botao-escuro: #444;
-    --borda: #444;
-    --sombra: 0 4px 8px rgba(0,0,0,0.3);
-    --btn-icon-hover: #333;
+    --fundo-primario: #0d0d1a;
+    --fundo-secundario: #16162a;
+    --texto-primario: #f0eeff;
+    --texto-secundario: #9999bb;
+    --borda: #2a2a44;
+    --sombra: 0 4px 24px rgba(0,0,0,0.3);
+    --sombra-hover: 0 8px 32px rgba(138,43,226,0.2);
+    --btn-icon-hover: #2a1a44;
+    --violeta-claro: #1a0a2e;
+    --texto-botao: #f0eeff;
+    --fundo-botao-escuro: #f0eeff;
 }
 
-html.dark-mode .lista-alunos li:hover,
-html.dark-mode .lista-alunos li.active {
-    background-color: #3f304d;
-}
-
-/* 3. APLICAÇÃO GLOBAL E RESET */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html {
-    scroll-behavior: smooth;
-}
+/* ===================== RESET ===================== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 
 body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--fundo-primario);
     color: var(--texto-primario);
     line-height: 1.6;
+    overflow-x: hidden;
 }
 
-.container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 80px 0; }
+.section-dark { background-color: var(--fundo-secundario); }
 
-.section {
-    padding: 30px 0;
-}
+h1, h2, h3 { line-height: 1.2; }
 
-.section-dark {
-    background-color: var(--fundo-secundario);
-}
-
-h1,
-h2,
-h3 {
-    color: var(--violeta);
-    margin-bottom: 20px;
-}
-
-h2 {
-    text-align: center;
-    font-size: 2.5rem;
-}
-
-/* 4. BOTÕES (Toggle e Padrão) */
-.btn-icon {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: var(--texto-secundario);
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    transition: background-color 0.2s;
-}
-
-.btn-icon:hover {
-    background-color: var(--btn-icon-hover);
-}
-
-.btn {
-    display: inline-block;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: var(--fundo-botao-escuro);
-    color: var(--texto-botao);
-    text-decoration: none;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.btn:hover {
-    background-color: #555;
-}
-
-.btn-primary {
-    background-color: var(--violeta);
-    color: #FFFFFF; /* Botão primário com texto branco sempre */
-}
-
-.btn-primary:hover {
-    background-color: #701db0;
-}
-
-/* 5. NAVBAR */
+/* ===================== NAVBAR ===================== */
 .navbar {
     background-color: var(--fundo-secundario);
     position: fixed;
@@ -134,15 +62,14 @@ h2 {
     width: calc(100% - 60px);
     max-width: 1100px;
     z-index: 1000;
-    padding: 12px 28px;
+    padding: 14px 32px;
     border-radius: 50px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    box-shadow: var(--sombra);
+    border: 1px solid var(--borda);
     transition: box-shadow 0.3s;
 }
 
-html.dark-mode .navbar {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-}
+html.dark-mode .navbar { box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
 
 .navbar .container {
     display: flex;
@@ -152,51 +79,45 @@ html.dark-mode .navbar {
     padding: 0;
 }
 
-.logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--violeta);
-    text-decoration: none;
-}
+/* Logo SVG */
+.logo-svg { height: 36px; width: auto; }
+.logo-link { text-decoration: none; display: flex; align-items: center; }
 
-.nav-links {
-    list-style: none;
-    display: flex;
-    gap: 25px;
-}
-
+.nav-links { list-style: none; display: flex; gap: 32px; }
 .nav-links a {
     text-decoration: none;
-    color: var(--texto-primario);
+    color: var(--texto-secundario);
+    font-weight: 500;
+    font-size: 0.92rem;
+    transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--violeta); }
+
+.nav-actions { display: flex; align-items: center; gap: 16px; }
+
+/* CTA Button navbar */
+.btn-nav-cta {
+    background-color: var(--violeta);
+    color: white !important;
+    padding: 10px 22px;
+    border-radius: 50px;
     font-weight: 600;
-    transition: color 0.3s;
-}
-
-.nav-links a:hover {
-    color: var(--violeta);
-}
-
-.nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-/* 6. ÍCONE DE USUÁRIO E DROPDOWN */
-.user-icon {
-    position: relative;
+    font-size: 0.88rem;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+    border: none;
     cursor: pointer;
-    font-size: 1.5rem;
 }
+.btn-nav-cta:hover { background-color: var(--violeta-escuro); transform: translateY(-1px); }
 
+/* ===================== DROPDOWN HOME ===================== */
 .user-menu-container {
     position: relative;
     display: flex;
     align-items: center;
     gap: 10px;
-    height: 100%;
 }
 
-/* Ponte invisível para não perder o hover */
 .user-menu-container::after {
     content: '';
     position: absolute;
@@ -206,347 +127,515 @@ html.dark-mode .navbar {
     height: 15px;
 }
 
+.nav-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--violeta);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.nav-avatar:hover { transform: scale(1.08); }
+
 .home-dropdown {
     display: none;
     position: absolute;
-    top: calc(100% + 10px);
+    top: calc(100% + 12px);
     right: 0;
     background-color: var(--fundo-secundario);
-    min-width: 180px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    border-radius: 12px;
+    min-width: 190px;
+    box-shadow: var(--sombra-hover);
+    border-radius: 16px;
     z-index: 1000;
     padding: 8px 0;
     border: 1px solid var(--borda);
     overflow: hidden;
 }
 
-html.dark-mode .home-dropdown {
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-}
-
-.user-menu-container:hover .home-dropdown {
-    display: block;
-}
+.user-menu-container:hover .home-dropdown { display: block; }
 
 .home-dropdown a {
     color: var(--texto-primario);
-    padding: 12px 20px;
+    padding: 11px 20px;
     text-decoration: none;
     display: block;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     transition: background 0.2s;
 }
+.home-dropdown a:hover { background-color: var(--violeta-claro); color: var(--violeta); }
+.home-dropdown hr { border: 0; border-top: 1px solid var(--borda); margin: 4px 0; }
+.home-dropdown a.sair:hover { background-color: rgba(220,53,69,0.08); color: #dc3545; }
 
-.home-dropdown a:hover {
-    background-color: rgba(138,43,226,0.1);
-    color: #8A2BE2;
+/* ===================== BOTÕES ===================== */
+.btn {
+    display: inline-block;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 50px;
+    background-color: var(--fundo-botao-escuro);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn:hover { opacity: 0.85; transform: translateY(-2px); }
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--violeta), var(--violeta-escuro));
+    color: white;
+    box-shadow: 0 4px 16px rgba(138,43,226,0.3);
+}
+.btn-primary:hover {
+    box-shadow: 0 8px 24px rgba(138,43,226,0.4);
+    transform: translateY(-2px);
+    opacity: 1;
 }
 
-.home-dropdown a[style*="color: red"]:hover,
-.home-dropdown a[style*="color:red"]:hover {
-    background-color: rgba(220,53,69,0.1) !important;
-    color: #dc3545 !important;
+.btn-outline {
+    background: transparent;
+    color: var(--violeta);
+    border: 2px solid var(--violeta);
 }
+.btn-outline:hover { background: var(--violeta); color: white; }
 
-.home-dropdown hr {
-    border: 0;
-    border-top: 1px solid var(--borda);
-    margin: 4px 0;
+.btn-icon {
+    background: none; border: none;
+    font-size: 1.4rem;
+    color: var(--texto-secundario);
+    cursor: pointer; padding: 6px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
 }
-/* 7. SEÇÃO HERO */
+.btn-icon:hover { background-color: var(--btn-icon-hover); }
+
+/* ===================== HERO ===================== */
 .hero {
-    background-color: var(--fundo-primario);
-    padding-top: 140px;
-    min-height: 80vh;
+    padding-top: 130px;
+    padding-bottom: 80px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Blob decorativo */
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(138,43,226,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+html.dark-mode .hero::before {
+    background: radial-gradient(circle, rgba(138,43,226,0.12) 0%, transparent 70%);
 }
 
 .hero-content {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     align-items: center;
-    justify-content: space-between;
-    gap: 40px;
+    gap: 60px;
 }
 
-.hero-text {
-    flex: 1;
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--violeta-claro);
+    color: var(--violeta);
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    border: 1px solid rgba(138,43,226,0.2);
 }
 
 .hero-text h1 {
-    font-size: 3.5rem;
-    line-height: 1.2;
+    font-size: 3.6rem;
+    font-weight: 800;
+    color: var(--texto-primario);
+    line-height: 1.1;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
 }
+
+.hero-text h1 span { color: var(--violeta); }
 
 .hero-text p {
     font-size: 1.1rem;
-    margin-bottom: 30px;
     color: var(--texto-secundario);
+    margin-bottom: 36px;
+    line-height: 1.7;
+    max-width: 460px;
 }
 
+.hero-cta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.hero-stats {
+    display: flex;
+    gap: 32px;
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--borda);
+}
+
+.hero-stat h3 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--violeta);
+    margin-bottom: 2px;
+}
+.hero-stat p { font-size: 0.82rem; color: var(--texto-secundario); }
+
 .hero-image {
-    flex: 1;
-    text-align: center;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .hero-image img {
-    max-width: 100%;
-    border-radius: 10px;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 24px;
+    object-fit: cover;
+    aspect-ratio: 4/5;
+    box-shadow: var(--sombra-hover);
 }
 
-/* 8. SEÇÃO TREINADORES */
-.trainers-grid {
+.hero-image-badge {
+    position: absolute;
+    bottom: 24px;
+    left: -20px;
+    background: var(--fundo-secundario);
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+    padding: 14px 20px;
+    box-shadow: var(--sombra);
     display: flex;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap;
-    margin-top: 40px;
+    align-items: center;
+    gap: 12px;
 }
+
+.hero-image-badge .badge-icon {
+    width: 42px; height: 42px;
+    background: var(--violeta-claro);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+
+.hero-image-badge p { font-size: 0.78rem; color: var(--texto-secundario); margin: 0; }
+.hero-image-badge strong { font-size: 0.92rem; color: var(--texto-primario); display: block; }
+
+/* ===================== BENEFÍCIOS ===================== */
+.benefits { padding: 80px 0; }
+
+.section-label {
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--violeta);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: var(--texto-primario);
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--texto-secundario);
+    margin-bottom: 56px;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.benefit-card {
+    background: var(--fundo-secundario);
+    border: 1px solid var(--borda);
+    border-radius: 20px;
+    padding: 32px 28px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.benefit-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--violeta), #c084fc);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.benefit-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--sombra-hover);
+    border-color: rgba(138,43,226,0.3);
+}
+.benefit-card:hover::before { opacity: 1; }
+
+.benefit-icon {
+    width: 52px; height: 52px;
+    background: var(--violeta-claro);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.benefit-card h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--texto-primario);
+    margin-bottom: 10px;
+}
+.benefit-card p { font-size: 0.88rem; color: var(--texto-secundario); line-height: 1.6; }
+
+/* ===================== EQUIPE ===================== */
+.team { padding: 80px 0; background-color: var(--fundo-secundario); }
+
+.swiper { width: 100%; padding: 20px 10px 48px; }
+.swiper-slide { display: flex; justify-content: center; height: auto; }
 
 .trainer-card {
-    background-color: var(--fundo-secundario);
-    border-radius: 10px;
-    box-shadow: var(--sombra);
+    width: 100%;
+    max-width: 300px;
+    background: var(--fundo-primario);
+    padding: 28px 24px;
+    border-radius: 20px;
     text-align: center;
-    padding: 20px;
-    width: 250px;
-    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid var(--borda);
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
 }
-
-.trainer-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
+.trainer-card:hover { transform: translateY(-6px); box-shadow: var(--sombra-hover); border-color: rgba(138,43,226,0.3); }
 
 .trainer-card img {
-    width: 150px;
-    height: 150px;
+    width: 110px; height: 110px;
     border-radius: 50%;
     object-fit: cover;
-    margin-bottom: 15px;
+    margin-bottom: 16px;
+    border: 3px solid var(--violeta);
 }
 
-/* 9. SEÇÃO CÁLCULO */
-.calc-form {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-top: 30px;
-}
+.trainer-card h3 { font-size: 1rem; font-weight: 700; color: var(--texto-primario); margin-bottom: 4px; }
 
-.calc-form .form-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.calc-form .form-group label {
-    margin-bottom: 5px;
-    font-weight: 600;
-}
-
-.calc-form .form-group input {
-    padding: 10px;
-    border: 1px solid var(--borda);
-    border-radius: 5px;
-    width: 200px;
-    background-color: var(--fundo-primario);
-    color: var(--texto-primario);
-}
-
-/* 10. DIV DE RESULTADO */
-.resultado {
-    margin-top: 30px;
-    padding: 20px;
-    background-color: var(--fundo-secundario);
-    border-radius: 5px;
-    text-align: center;
-    border-left: 5px solid var(--violeta);
-}
-
-.resultado.bom {
-    border-left-color: var(--resultado-bom);
-}
-
-.resultado.medio {
-    border-left-color: var(--resultado-medio);
-}
-
-.resultado.ruim {
-    border-left-color: var(--resultado-ruim);
-}
-
-.hidden {
-    display: none;
-}
-
-/* 11. ESTILOS DO MODAL */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 2000;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-overlay.active {
-    display: flex;
-}
-
-.modal-content {
-    background-color: var(--fundo-secundario);
-    padding: 30px 40px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    position: relative;
-    width: 90%;
-    max-width: 850px;
-}
-
-.close-modal {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 2rem;
-    color: var(--texto-secundario);
-    cursor: pointer;
-    line-height: 1;
-}
-
-.close-modal:hover {
-    color: var(--texto-primario);
-}
-
-.acesso-wrapper {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    flex-wrap: wrap;
-}
-
-.form-container {
-    padding: 10px;
-    flex: 1;
-    min-width: 300px;
-}
-
-.form-container h2 {
-    text-align: left;
-    font-size: 1.8rem;
-}
-
-.form-container .form-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 15px;
-}
-
-.form-container .form-group label {
-    margin-bottom: 5px;
-    font-weight: 600;
-}
-
-.form-container .form-group input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid var(--borda);
-    border-radius: 5px;
-    background-color: var(--fundo-primario);
-    color: var(--texto-primario);
-}
-
-.form-container button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-}
-
-/* 12. RODAPÉ */
-footer {
-    background-color: var(--fundo-botao-escuro);
-    color: var(--texto-botao);
-    text-align: center;
-    padding: 20px 0;
-    margin-top: 40px;
-}
-/* --- ESTILO DO BOTÃO SWITCH (TEMA) --- */
-
-.theme-switch-wrapper {
-    display: flex;
-    align-items: center;
-    margin-right: 15px; /* Espaço entre o switch e o botão de Login */
-}
-
-.theme-switch {
+.trainer-badge {
     display: inline-block;
-    height: 34px;
-    position: relative;
-    width: 60px;
+    background: var(--violeta-claro);
+    color: var(--violeta);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
 }
 
-.theme-switch input {
-    display: none; /* Esconde a caixa de seleção padrão feia */
+.trainer-card p.desc { font-size: 0.82rem; color: var(--texto-secundario); margin-bottom: 20px; }
+
+.badge-escolhido {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #16a34a;
+    font-weight: 600;
+    font-size: 0.85rem;
+    background: #dcfce7;
+    padding: 6px 14px;
+    border-radius: 50px;
 }
+
+html.dark-mode .badge-escolhido { background: rgba(22,163,74,0.15); }
+
+.swiper-pagination-bullet-active { background: var(--violeta) !important; }
+.swiper-button-next, .swiper-button-prev { color: var(--violeta) !important; }
+
+/* ===================== CALCULADORA ===================== */
+.calc-section { padding: 80px 0; }
+
+.calc-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.calc-info h2 { font-size: 2rem; font-weight: 800; color: var(--texto-primario); margin-bottom: 16px; }
+.calc-info p { color: var(--texto-secundario); line-height: 1.7; margin-bottom: 24px; }
+
+.calc-features { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.calc-features li {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.9rem; color: var(--texto-secundario);
+}
+.calc-features li::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: var(--violeta);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.calc-card {
+    background: var(--fundo-secundario);
+    border: 1px solid var(--borda);
+    border-radius: 24px;
+    padding: 36px 32px;
+    box-shadow: var(--sombra);
+}
+
+.calc-form { display: flex; flex-direction: column; gap: 16px; }
+
+.calc-input-group { display: flex; flex-direction: column; gap: 6px; }
+.calc-input-group label { font-size: 0.85rem; font-weight: 600; color: var(--texto-secundario); }
+.calc-input-group input {
+    padding: 12px 16px;
+    border: 1.5px solid var(--borda);
+    border-radius: 12px;
+    background: var(--fundo-primario);
+    color: var(--texto-primario);
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color 0.2s;
+    outline: none;
+}
+.calc-input-group input:focus { border-color: var(--violeta); }
+
+.resultado {
+    margin-top: 8px;
+    padding: 20px;
+    background: var(--violeta-claro);
+    border-radius: 14px;
+    text-align: center;
+    border: 1px solid rgba(138,43,226,0.2);
+}
+.resultado h3 { color: var(--violeta); font-size: 1rem; margin-bottom: 8px; }
+.resultado p { font-size: 0.9rem; color: var(--texto-secundario); margin: 4px 0; }
+.resultado.hidden { display: none; }
+
+/* ===================== SOBRE ===================== */
+.sobre { padding: 80px 0; background-color: var(--fundo-secundario); }
+.sobre .container { text-align: center; max-width: 640px; }
+.sobre p { color: var(--texto-secundario); font-size: 1.05rem; line-height: 1.8; }
+
+/* ===================== FOOTER ===================== */
+footer {
+    background: var(--texto-primario);
+    color: rgba(255,255,255,0.6);
+    padding: 48px 0 28px;
+}
+
+html.dark-mode footer { background: #080814; }
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 48px;
+    margin-bottom: 40px;
+}
+
+.footer-brand p { font-size: 0.88rem; line-height: 1.7; margin-top: 16px; max-width: 280px; }
+
+.footer-col h4 { color: white; font-size: 0.9rem; font-weight: 600; margin-bottom: 16px; }
+.footer-col a {
+    display: block;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+    transition: color 0.2s;
+}
+.footer-col a:hover { color: #c084fc; }
+
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 24px;
+    text-align: center;
+    font-size: 0.82rem;
+}
+
+/* ===================== TEMA SWITCH ===================== */
+.theme-switch-wrapper { display: flex; align-items: center; }
+.theme-switch { display: inline-block; height: 30px; position: relative; width: 54px; }
+.theme-switch input { display: none; }
 
 .slider {
-    background-color: #ccc; /* Cor do fundo quando desligado (Light Mode) */
-    bottom: 0;
-    cursor: pointer;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-    transition: .4s; /* Suavidade da animação */
-    border-radius: 34px; /* Deixa arredondado */
-    display: flex;
-    align-items: center;
+    background-color: #ddd;
+    bottom: 0; cursor: pointer; left: 0;
+    position: absolute; right: 0; top: 0;
+    transition: .3s; border-radius: 34px;
+    display: flex; align-items: center;
     justify-content: space-between;
     padding: 0 5px;
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
 }
 
-/* A bolinha que se move */
 .slider:before {
     background-color: #fff;
-    bottom: 4px;
-    content: "";
-    height: 26px;
-    left: 4px;
-    position: absolute;
-    transition: .4s;
-    width: 26px;
-    border-radius: 50%;
-    z-index: 2; /* Garante que a bolinha fique por cima dos ícones */
+    bottom: 3px; content: "";
+    height: 24px; left: 3px;
+    position: absolute; transition: .3s;
+    width: 24px; border-radius: 50%; z-index: 2;
 }
 
-/* Quando o input estiver marcado (Dark Mode Ativo) */
-input:checked + .slider {
-    background-color: var(--violeta); /* Usa a sua cor roxa */
-}
+input:checked + .slider { background-color: var(--violeta); }
+input:checked + .slider:before { transform: translateX(24px); }
 
-/* Move a bolinha para a direita quando marcado */
-input:checked + .slider:before {
-    transform: translateX(26px);
-}
+.icon-sun, .icon-moon { font-size: 12px; z-index: 1; user-select: none; }
+.icon-sun { margin-left: 2px; }
+.icon-moon { margin-right: 2px; }
 
-/* Ícones dentro do botão */
-.icon-sun, .icon-moon {
-    font-size: 14px;
-    z-index: 1;
-    user-select: none;
+/* ===================== MODAL ===================== */
+.modal-overlay {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 2000; opacity: 0; visibility: hidden;
+    transition: all 0.3s;
 }
+.modal-overlay.active { opacity: 1; visibility: visible; }
 
-.icon-sun {
-    margin-left: 2px;
-}
-
-.icon-moon {
-    margin-right: 2px;
-}
+.hidden { display: none; }
