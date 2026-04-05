@@ -1,57 +1,52 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Life Fit</title>
+  <title>Life Fit — Treine, Evolua, Viva</title>
   <meta name="_csrf" th:content="${_csrf.token}"/>
   <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
   <link rel="stylesheet" th:href="@{/style.css}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
-  <style>
-    .nav-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #8A2BE2; cursor: pointer; transition: transform 0.2s; }
-    .nav-avatar:hover { transform: scale(1.1); }
-    .user-menu-container { position: relative; display: flex; align-items: center; gap: 10px; height: 100%; padding-bottom: 5px; }
-    .home-dropdown { display: none; position: absolute; top: 100%; right: 0; background-color: var(--card-bg, #fff); min-width: 180px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 8px; z-index: 1000; padding: 10px 0; margin-top: 10px; }
-    .home-dropdown::before { content: ""; position: absolute; top: -20px; left: 0; width: 100%; height: 20px; background: transparent; }
-    .dark-mode .home-dropdown { background-color: #1f1f1f; border: 1px solid #333; }
-    .user-menu-container:hover .home-dropdown { display: block; }
-    .home-dropdown a { color: #333; padding: 12px 20px; text-decoration: none; display: block; font-size: 0.95rem; transition: background 0.2s; }
-    .dark-mode .home-dropdown a { color: #fff; }
-    .home-dropdown a:hover { background-color: #f1f1f1; color: #8A2BE2; }
-    .dark-mode .home-dropdown a:hover { background-color: #333; }
-    .swiper { width: 100%; padding: 40px 10px; }
-    .swiper-slide { display: flex; justify-content: center; height: auto; }
-    .trainer-card { width: 100%; max-width: 320px; background: #fff; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 1px solid transparent; transition: transform 0.3s; display: flex; flex-direction: column; align-items: center; }
-    .dark-mode .trainer-card { background: #1e1e1e; border-color: #333; }
-    .trainer-card:hover { transform: translateY(-5px); border-color: #8A2BE2; }
-    .swiper-pagination-bullet-active { background: #8A2BE2 !important; }
-    .swiper-button-next, .swiper-button-prev { color: #8A2BE2 !important; }
-    .badge-escolhido { color: #8A2BE2; font-weight: bold; font-size: 0.9rem; }
-  </style>
   <script>
     (function() {
-      const theme = localStorage.getItem('theme');
-      if (theme === 'dark' || (theme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      const t = localStorage.getItem('theme');
+      if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches))
         document.documentElement.classList.add('dark-mode');
-      }
     })();
   </script>
 </head>
 <body>
 
+<!-- ===== NAVBAR ===== -->
 <header class="navbar">
   <div class="container">
-    <a href="#inicio" class="logo">Life Fit</a>
+
+    <!-- LOGO SVG -->
+    <a href="#inicio" class="logo-link">
+      <svg class="logo-svg" viewBox="0 0 220 36" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="0,18 8,18 14,4 20,28 26,12 32,18 40,18"
+                  fill="none" stroke="#8A2BE2" stroke-width="3"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="20" cy="18" r="16" fill="none" stroke="#8A2BE2" stroke-width="1.5" opacity="0.3"/>
+        <text x="48" y="24" font-family="Poppins,sans-serif" font-weight="800"
+              font-size="20" fill="#8A2BE2">LIFE</text>
+        <line x1="94" y1="8" x2="94" y2="28" stroke="#8A2BE2" stroke-width="1.5" opacity="0.4"/>
+        <text x="100" y="24" font-family="Poppins,sans-serif" font-weight="800"
+              font-size="20" fill="var(--texto-primario, #1a1a2e)">FIT</text>
+      </svg>
+    </a>
+
     <nav>
       <ul class="nav-links">
         <li><a href="#inicio">Início</a></li>
         <li><a href="#profissionais">Equipe</a></li>
-        <li><a href="#calculo">Cálculo</a></li>
-        <li><a href="#sobre-nos">Sobre Nós</a></li>
+        <li><a href="#beneficios">Benefícios</a></li>
+        <li><a href="#calculo">Calculadora</a></li>
+        <li><a href="#sobre-nos">Sobre</a></li>
       </ul>
     </nav>
+
     <div class="nav-actions">
       <div class="theme-switch-wrapper">
         <label class="theme-switch" for="checkbox-theme">
@@ -65,18 +60,24 @@
 
       <!-- LOGADO -->
       <div th:if="${estaLogado}" class="user-menu-container">
-        <span style="font-size: 0.9em; font-weight: bold;" th:text="'Olá, ' + ${usuario.nome}"></span>
+                <span style="font-size:0.88rem;font-weight:600;color:var(--texto-secundario);"
+                      th:text="'Olá, ' + ${usuario.nome}"></span>
         <img th:if="${usuario.foto != null}"
              th:src="@{'/uploads/' + ${usuario.foto}}"
              alt="Perfil" class="nav-avatar"/>
-        <span th:unless="${usuario.foto != null}" style="font-size: 2rem; cursor: pointer;">👤</span>
+        <span th:unless="${usuario.foto != null}"
+              style="font-size:1.8rem;cursor:pointer;">👤</span>
         <div class="home-dropdown">
-          <a th:href="${usuario.tipo == 'aluno'} ? '/aluno/painel' : '/treinador/painel'"><strong>Meu Painel</strong></a>
+          <a th:href="${usuario.tipo == 'aluno'} ? '/aluno/painel' : '/treinador/painel'">
+            <strong>Meu Painel</strong>
+          </a>
           <a th:href="@{/configuracoes}">Configurações</a>
           <a th:href="@{/chat}">💬 Chat</a>
-          <hr style="border: 0; border-top: 1px solid #eee;">
-          <a href="#" onclick="event.preventDefault(); document.getElementById('form-logout-index').submit();"
-             style="color: red;">Sair</a>
+          <hr>
+          <a href="#" class="sair"
+             onclick="event.preventDefault(); document.getElementById('form-logout-index').submit();">
+            Sair
+          </a>
         </div>
       </div>
       <form id="form-logout-index" th:action="@{/logout}" method="POST" style="display:none">
@@ -84,87 +85,161 @@
       </form>
 
       <!-- NÃO LOGADO -->
-      <a th:unless="${estaLogado}" th:href="@{/login}">
-        <button class="btn">Login</button>
+      <a th:unless="${estaLogado}" th:href="@{/login}" class="btn-nav-cta">
+        Começar agora
       </a>
     </div>
   </div>
 </header>
 
+<!-- ===== HERO ===== -->
 <main>
   <section id="inicio" class="hero">
-    <div class="container hero-content">
-      <div class="hero-text">
-        <h1>Transforme seu corpo, eleve sua mente.</h1>
-        <p>Na Life Fit, oferecemos o melhor ambiente e os melhores profissionais para você alcançar seus objetivos.</p>
-        <a th:if="${estaLogado}"
-           th:href="${usuario.tipo == 'aluno'} ? '/aluno/painel' : '/treinador/painel'"
-           class="btn btn-primary"
-           th:text="${usuario.tipo == 'aluno'} ? 'Acessar meu Treino' : 'Acessar meus Alunos'">
-        </a>
-        <a th:unless="${estaLogado}" href="#calculo" class="btn btn-primary">Comece sua avaliação</a>
-      </div>
-      <div class="hero-image">
-        <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=1200&q=85" alt="Pessoa se exercitando">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-text">
+          <div class="hero-badge">
+            💪 Plataforma de saúde e performance
+          </div>
+          <h1>
+            Seu corpo.<br>
+            Seu ritmo.<br>
+            <span>Seu resultado.</span>
+          </h1>
+          <p>Conectamos você aos melhores treinadores e nutricionistas para um acompanhamento personalizado. Sem complicação, direto ao ponto.</p>
+
+          <div class="hero-cta">
+            <a th:if="${estaLogado}"
+               th:href="${usuario.tipo == 'aluno'} ? '/aluno/painel' : '/treinador/painel'"
+               class="btn btn-primary"
+               th:text="${usuario.tipo == 'aluno'} ? 'Ver meu treino' : 'Ver meus alunos'">
+            </a>
+            <a th:unless="${estaLogado}" th:href="@{/login}" class="btn btn-primary">
+              Começar gratuitamente
+            </a>
+            <a href="#profissionais" class="btn btn-outline">Conhecer a equipe</a>
+          </div>
+
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <h3>100+</h3>
+              <p>Alunos ativos</p>
+            </div>
+            <div class="hero-stat">
+              <h3>15+</h3>
+              <p>Profissionais</p>
+            </div>
+            <div class="hero-stat">
+              <h3>98%</h3>
+              <p>Satisfação</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-image">
+          <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&q=85"
+               alt="Treino personalizado Life Fit">
+          <div class="hero-image-badge">
+            <div class="badge-icon">🎯</div>
+            <div>
+              <strong>Plano personalizado</strong>
+              <p>treino + dieta sob medida</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <section id="profissionais" class="section">
+  <!-- ===== BENEFÍCIOS ===== -->
+  <section id="beneficios" class="benefits">
     <div class="container">
-      <h2 style="text-align: center; margin-bottom: 30px;">Conheça Nossa Equipe</h2>
+      <p class="section-label">Por que a Life Fit?</p>
+      <h2 class="section-title">Tudo que você precisa em um só lugar</h2>
+      <p class="section-subtitle">Uma plataforma completa para transformar sua saúde com o suporte de profissionais reais.</p>
+
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon">🏋️</div>
+          <h3>Treino personalizado</h3>
+          <p>Seu treinador monta um plano exclusivo para seus objetivos, seja ganho de massa, emagrecimento ou condicionamento.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">🥗</div>
+          <h3>Dieta sob medida</h3>
+          <p>Nutricionistas especializados criam planos alimentares que se encaixam na sua rotina sem abrir mão do que você gosta.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">💬</div>
+          <h3>Chat direto</h3>
+          <p>Fale com seu profissional a qualquer momento. Tire dúvidas, ajuste o plano e mantenha o foco nos seus objetivos.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">📊</div>
+          <h3>Acompanhamento real</h3>
+          <p>Visualize seu progresso e tenha acesso ao seu plano completo de treino e alimentação direto na plataforma.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">⚡</div>
+          <h3>Simples e rápido</h3>
+          <p>Cadastro em segundos, escolha seu profissional e comece agora. Sem burocracia, sem complicação.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">🔒</div>
+          <h3>100% seguro</h3>
+          <p>Seus dados e planos são privados e protegidos. Só você e seu profissional têm acesso às suas informações.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== EQUIPE ===== -->
+  <section id="profissionais" class="team">
+    <div class="container">
+      <p class="section-label">Nossa equipe</p>
+      <h2 class="section-title">Conheça os profissionais</h2>
+      <p class="section-subtitle">Especialistas prontos para transformar seus resultados com dedicação e método.</p>
+
       <div class="swiper mySwiper">
         <div class="swiper-wrapper">
           <div th:if="${#lists.isEmpty(profissionais)}" class="swiper-slide">
-            <p>Nenhum profissional cadastrado.</p>
+            <p style="color:var(--texto-secundario);text-align:center;padding:40px;">
+              Nenhum profissional cadastrado ainda.
+            </p>
           </div>
           <div th:each="prof : ${profissionais}" class="swiper-slide">
             <div class="trainer-card">
               <img th:if="${prof.foto != null}"
-                   th:src="@{'/uploads/' + ${prof.foto}}"
-                   alt="Foto"
-                   style="width:130px;height:130px;border-radius:50%;object-fit:cover;margin-bottom:15px;border:3px solid #8A2BE2;">
+                   th:src="@{'/uploads/' + ${prof.foto}}" alt="Foto"/>
               <img th:unless="${prof.foto != null}"
-                   th:src="${prof.tipo == 'treinador'} ? 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&q=80' : 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&q=80'"
-                   alt="Foto"
-                   style="width:130px;height:130px;border-radius:50%;object-fit:cover;margin-bottom:15px;border:3px solid #8A2BE2;">
+                   th:src="${prof.tipo == 'treinador'}
+                                 ? 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=80'
+                                 : 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&q=80'"
+                   alt="Foto"/>
+
               <h3 th:text="${prof.nome}"></h3>
-              <p style="color:#8A2BE2;font-weight:bold;text-transform:uppercase;margin:5px 0;"
-                 th:text="${prof.tipo == 'treinador'} ? 'TREINADOR' : 'NUTRICIONISTA'"></p>
-              <p style="font-size:0.9em;color:#888;margin-bottom:15px;"
+              <span class="trainer-badge"
+                    th:text="${prof.tipo == 'treinador'} ? 'Treinador' : 'Nutricionista'"></span>
+              <p class="desc"
                  th:text="${prof.tipo == 'treinador'} ? 'Especialista em Performance' : 'Nutrição Esportiva'"></p>
 
-              <!-- Botões para aluno logado -->
               <div th:if="${estaLogado and usuario.tipo == 'aluno'}">
-
-                <!-- Já é meu treinador -->
-                <span th:if="${prof.tipo == 'treinador' and usuario.meuTreinadorId == prof.id}"
-                      class="badge-escolhido">✅ Seu Treinador</span>
-
-                <!-- Já é meu nutricionista -->
+                            <span th:if="${prof.tipo == 'treinador' and usuario.meuTreinadorId == prof.id}"
+                                  class="badge-escolhido">✅ Seu Treinador</span>
                 <span th:if="${prof.tipo == 'nutricionista' and usuario.meuNutricionistaId == prof.id}"
                       class="badge-escolhido">✅ Seu Nutricionista</span>
-
-                <!-- Pode escolher treinador -->
                 <button th:if="${prof.tipo == 'treinador' and usuario.meuTreinadorId != prof.id}"
-                        th:data-id="${prof.id}"
-                        th:data-tipo="${prof.tipo}"
+                        th:data-id="${prof.id}" th:data-tipo="${prof.tipo}"
                         onclick="escolherProfissional(this.dataset.id, this.dataset.tipo)"
-                        class="btn"
-                        style="padding:10px 20px;font-size:0.9rem;background-color:#8A2BE2;color:white;border:none;border-radius:5px;cursor:pointer;">
+                        class="btn btn-primary" style="padding:10px 24px;font-size:0.88rem;">
                   Escolher
                 </button>
-
-                <!-- Pode escolher nutricionista -->
                 <button th:if="${prof.tipo == 'nutricionista' and usuario.meuNutricionistaId != prof.id}"
-                        th:data-id="${prof.id}"
-                        th:data-tipo="${prof.tipo}"
+                        th:data-id="${prof.id}" th:data-tipo="${prof.tipo}"
                         onclick="escolherProfissional(this.dataset.id, this.dataset.tipo)"
-                        class="btn"
-                        style="padding:10px 20px;font-size:0.9rem;background-color:#8A2BE2;color:white;border:none;border-radius:5px;cursor:pointer;">
+                        class="btn btn-primary" style="padding:10px 24px;font-size:0.88rem;">
                   Escolher
                 </button>
-
               </div>
             </div>
           </div>
@@ -176,37 +251,85 @@
     </div>
   </section>
 
-  <section id="calculo" class="section section-dark">
+  <!-- ===== CALCULADORA ===== -->
+  <section id="calculo" class="calc-section">
     <div class="container">
-      <h2>Calculadora de Saúde Física</h2>
-      <p>Insira seus dados abaixo para uma avaliação inicial baseada no seu IMC.</p>
-      <form id="calc-form" class="calc-form"
-            th:attr="data-logado=${estaLogado},data-link=${estaLogado ? (usuario.tipo == 'aluno' ? '/aluno/painel' : '/treinador/painel') : '#'}">
-        <div class="form-group">
-          <label for="peso">Peso (kg)</label>
-          <input type="number" id="peso" step="0.1" placeholder="Ex: 75.5" required>
+      <div class="calc-wrapper">
+        <div class="calc-info">
+          <p class="section-label" style="text-align:left;">Saúde em números</p>
+          <h2>Calcule seu IMC agora</h2>
+          <p>Descubra em segundos como está seu índice de massa corporal e dê o primeiro passo rumo a uma vida mais saudável.</p>
+          <ul class="calc-features">
+            <li>Resultado instantâneo e preciso</li>
+            <li>Classificação personalizada</li>
+            <li>Orientação para o próximo passo</li>
+          </ul>
         </div>
-        <div class="form-group">
-          <label for="altura">Altura (cm)</label>
-          <input type="number" id="altura" placeholder="Ex: 180" required>
+
+        <div class="calc-card">
+          <form id="calc-form" class="calc-form"
+                th:attr="data-logado=${estaLogado},data-link=${estaLogado ? (usuario.tipo == 'aluno' ? '/aluno/painel' : '/treinador/painel') : '#'}">
+            <div class="calc-input-group">
+              <label for="peso">Peso (kg)</label>
+              <input type="number" id="peso" step="0.1" placeholder="Ex: 75.5" required>
+            </div>
+            <div class="calc-input-group">
+              <label for="altura">Altura (cm)</label>
+              <input type="number" id="altura" placeholder="Ex: 180" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">
+              Calcular IMC
+            </button>
+          </form>
+          <div id="resultado" class="resultado hidden"></div>
         </div>
-        <button type="submit" class="btn btn-primary">Calcular Agora</button>
-      </form>
-      <div id="resultado" class="resultado hidden"></div>
+      </div>
     </div>
   </section>
 
-  <section id="sobre-nos" class="section">
+  <!-- ===== SOBRE ===== -->
+  <section id="sobre-nos" class="sobre">
     <div class="container">
-      <h2>Sobre a Life Fit</h2>
-      <p>Fundada em 2025, Life Fit nasceu com a missão de democratizar o acesso à saúde e ao bem-estar.</p>
+      <p class="section-label">Nossa história</p>
+      <h2 class="section-title">Sobre a Life Fit</h2>
+      <p>Fundada com a missão de democratizar o acesso à saúde, a Life Fit conecta pessoas a profissionais qualificados de forma simples, acessível e eficiente. Acreditamos que todo mundo merece um acompanhamento de qualidade, independente de onde esteja.</p>
     </div>
   </section>
 </main>
 
+<!-- ===== FOOTER ===== -->
 <footer>
   <div class="container">
-    <p>&copy; 2025 Life Fit. Todos os direitos reservados.</p>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <svg viewBox="0 0 160 28" height="28" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="0,14 6,14 11,3 16,22 21,9 26,14 32,14"
+                    fill="none" stroke="#c084fc" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="16" cy="14" r="12" fill="none" stroke="#c084fc" stroke-width="1" opacity="0.4"/>
+          <text x="38" y="19" font-family="Poppins,sans-serif" font-weight="800"
+                font-size="16" fill="#c084fc">LIFE</text>
+          <line x1="74" y1="6" x2="74" y2="22" stroke="#c084fc" stroke-width="1.2" opacity="0.5"/>
+          <text x="80" y="19" font-family="Poppins,sans-serif" font-weight="800"
+                font-size="16" fill="rgba(255,255,255,0.8)">FIT</text>
+        </svg>
+        <p>A plataforma que conecta alunos a treinadores e nutricionistas para resultados reais.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Plataforma</h4>
+        <a th:href="@{/login}">Entrar</a>
+        <a href="#profissionais">Nossa equipe</a>
+        <a href="#calculo">Calculadora IMC</a>
+      </div>
+      <div class="footer-col">
+        <h4>Suporte</h4>
+        <a href="#sobre-nos">Sobre nós</a>
+        <a href="#beneficios">Benefícios</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Life Fit. Todos os direitos reservados.</p>
+    </div>
   </div>
 </footer>
 
@@ -218,22 +341,20 @@
   const csrfHeader = [[${_csrf.headerName}]];
 
   var swiper = new Swiper(".mySwiper", {
-    slidesPerView: 1, spaceBetween: 20,
+    slidesPerView: 1, spaceBetween: 24,
     pagination: { el: ".swiper-pagination", clickable: true },
     navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
     breakpoints: {
       640: { slidesPerView: 2, spaceBetween: 20 },
-      1024: { slidesPerView: 3, spaceBetween: 30 }
+      1024: { slidesPerView: 3, spaceBetween: 24 }
     }
   });
 
   function escolherProfissional(idProfissional, tipoProfissional) {
     if (!confirm("Deseja escolher este profissional como seu " + tipoProfissional + "?")) return;
-
     const params = new URLSearchParams({ id_profissional: idProfissional, tipo_profissional: tipoProfissional });
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
     headers[csrfHeader] = csrfToken;
-
     fetch('/api/escolher-profissional', { method: 'POST', headers: headers, body: params })
             .then(res => res.json())
             .then(data => {
@@ -243,4 +364,5 @@
             .catch(err => console.error(err));
   }
 </script>
+</body>
 </html>
