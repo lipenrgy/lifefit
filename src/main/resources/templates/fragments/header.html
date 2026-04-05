@@ -36,6 +36,9 @@
             <span th:unless="${usuario.foto != null}">👤</span>
 
             <div class="dropdown-menu">
+
+                <a th:href="@{/configuracoes}">Meu Perfil</a>
+
                 <a th:href="@{/chat}">💬 Chat</a>
                 <a th:href="@{/configuracoes}">Configurações</a>
                 <a href="#"
