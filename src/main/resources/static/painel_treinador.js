@@ -1,24 +1,23 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const listaAlunosUL = document.getElementById('alunos-ul');
     const nomeAlunoTitulo = document.getElementById('aluno-selecionado-nome');
     const formPlano = document.getElementById('form-plano');
     const inputAlunoId = document.getElementById('aluno-id-hidden');
-    const textareaTreino = document.getElementById('treino');
-    const textareaDieta = document.getElementById('dieta');
     let liAlunos = [];
+    let planoAtual = [];
+    let alunoSelecionadoId = null;
 
-    // Pega o token CSRF das meta tags do HTML
     function getCsrfToken() {
         return document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || '';
     }
-
     function getCsrfHeader() {
         return document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content') || 'X-CSRF-TOKEN';
     }
 
+    // ===== CARREGAR ALUNOS =====
     function carregarAlunos() {
         fetch('/api/treinador/alunos')
-            .then(response => response.json())
+            .then(r => r.json())
             .then(data => {
                 listaAlunosUL.innerHTML = '';
                 if (data.length > 0) {
@@ -29,123 +28,233 @@ document.addEventListener('DOMContentLoaded', function() {
                         listaAlunosUL.appendChild(li);
                     });
                     liAlunos = document.querySelectorAll('#alunos-ul li');
-                    adicionarEventoClickAlunos();
+                    liAlunos.forEach(li => {
+                        li.addEventListener('click', function () {
+                            liAlunos.forEach(i => i.classList.remove('active'));
+                            this.classList.add('active');
+                            selecionarAluno(this.dataset.id, this.textContent);
+                        });
+                    });
                 } else {
-                    listaAlunosUL.innerHTML = '<li>Nenhum aluno encontrado.</li>';
+                    listaAlunosUL.innerHTML = '<li style="color:var(--texto-secundario);font-size:0.88rem;">Nenhum aluno encontrado.</li>';
                 }
-            })
-            .catch(error => console.error("Erro ao buscar alunos:", error));
-    }
-
-    function adicionarEventoClickAlunos() {
-        liAlunos.forEach(li => {
-            li.addEventListener('click', function() {
-                liAlunos.forEach(item => item.classList.remove('active'));
-                this.classList.add('active');
-                selecionarAluno(this.dataset.id, this.textContent);
             });
-        });
     }
 
+    // ===== SELECIONAR ALUNO =====
     function selecionarAluno(id, nome) {
-        nomeAlunoTitulo.textContent = `Plano de ${nome}`;
+        alunoSelecionadoId = id;
         inputAlunoId.value = id;
+        nomeAlunoTitulo.textContent = `Treino de ${nome}`;
 
-        if (textareaTreino) textareaTreino.value = 'Carregando...';
-        if (textareaDieta) textareaDieta.value = 'Carregando...';
-
-        fetch(`/api/treinador/plano?alunoId=${id}`)
-            .then(response => response.json())
+        // Mostra o form e esconde o placeholder
+        document.getElementById('form-plano').style.display = 'flex';
+        document.getElementById('placeholder-plano').style.display = 'none';
+        // Carrega exercícios do plano deste aluno
+        fetch(`/api/treinador/plano-exercicios?alunoId=${id}`)
+            .then(r => r.json())
             .then(data => {
-                if (textareaTreino) textareaTreino.value = data.treino || '';
-                if (textareaDieta) textareaDieta.value = data.dieta || '';
-                formPlano.classList.remove('hidden');
-            })
-            .catch(error => {
-                console.error("Erro ao buscar plano:", error);
-                formPlano.classList.remove('hidden');
+                planoAtual = data;
+                renderizarPlano();
             });
+
+        // Carrega lista de exercícios disponíveis
+        carregarExercicios();
     }
 
-    formPlano.addEventListener('submit', function(event) {
-        event.preventDefault();
+    // ===== RENDERIZA PLANO ATUAL =====
+    function renderizarPlano() {
+        const container = document.getElementById('plano-atual');
+        container.innerHTML = '';
 
-        const btnSalvar = formPlano.querySelector('button');
-        const textoOriginal = btnSalvar.innerText;
-        btnSalvar.innerText = "Salvando...";
-        btnSalvar.disabled = true;
-        btnSalvar.style.opacity = "0.7";
+        if (planoAtual.length === 0) {
+            container.innerHTML = '<p style="color:var(--texto-secundario);font-size:0.88rem;text-align:center;padding:20px;">Nenhum exercício adicionado ainda.</p>';
+            return;
+        }
 
-        const params = new URLSearchParams({
-            alunoId: inputAlunoId.value,
-            treino: textareaTreino ? textareaTreino.value : '',
-            dieta: textareaDieta ? textareaDieta.value : ''
+        // Agrupa por categoria
+        const grupos = {};
+        planoAtual.forEach(ex => {
+            if (!grupos[ex.categoria]) grupos[ex.categoria] = [];
+            grupos[ex.categoria].push(ex);
         });
 
-        const headers = {
-            'Content-Type': 'application/x-www-form-urlencoded'
+        Object.entries(grupos).forEach(([cat, exercicios]) => {
+            const catDiv = document.createElement('div');
+            catDiv.className = 'plano-categoria';
+            catDiv.innerHTML = `<div class="plano-cat-header">${getCatIcon(cat)} ${cat}</div>`;
+
+            exercicios.forEach((ex, idx) => {
+                const globalIdx = planoAtual.indexOf(ex);
+                const item = document.createElement('div');
+                item.className = 'plano-exercicio-item';
+                item.innerHTML = `
+                    <div class="plano-ex-info">
+                        <span class="plano-ex-nome">${ex.nome}</span>
+                        <div class="plano-ex-config">
+                            <div class="config-input-group">
+                                <label>Séries</label>
+                                <input type="number" class="config-input" value="${ex.series}" min="1" max="20"
+                                    onchange="atualizarExercicio(${globalIdx}, 'series', this.value)">
+                            </div>
+                            <span class="config-sep">×</span>
+                            <div class="config-input-group">
+                                <label>Reps</label>
+                                <input type="number" class="config-input" value="${ex.repeticoes}" min="1" max="100"
+                                    onchange="atualizarExercicio(${globalIdx}, 'repeticoes', this.value)">
+                            </div>
+                            <div class="config-input-group">
+                                <label>Peso (kg)</label>
+                                <input type="number" class="config-input" value="${ex.peso}" min="0" step="0.5"
+                                    onchange="atualizarExercicio(${globalIdx}, 'peso', this.value)">
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-remover-ex" onclick="removerExercicio(${globalIdx})" title="Remover">✕</button>
+                `;
+                catDiv.appendChild(item);
+            });
+
+            container.appendChild(catDiv);
+        });
+    }
+
+    window.atualizarExercicio = function(idx, campo, valor) {
+        planoAtual[idx][campo] = campo === 'peso' ? parseFloat(valor) : parseInt(valor);
+    };
+
+    window.removerExercicio = function(idx) {
+        planoAtual.splice(idx, 1);
+        renderizarPlano();
+    };
+
+    // ===== CARREGAR EXERCÍCIOS DISPONÍVEIS =====
+    function carregarExercicios(busca = '', categoria = 'Todos') {
+        let url = '/api/treinador/exercicios?';
+        if (busca) url += `busca=${encodeURIComponent(busca)}&`;
+        if (categoria !== 'Todos') url += `categoria=${encodeURIComponent(categoria)}`;
+
+        fetch(url)
+            .then(r => r.json())
+            .then(data => renderizarExercicios(data));
+    }
+
+    function renderizarExercicios(data) {
+        const container = document.getElementById('lista-exercicios');
+        container.innerHTML = '';
+
+        const totalExercicios = Object.values(data).flat().length;
+        if (totalExercicios === 0) {
+            container.innerHTML = '<p style="color:var(--texto-secundario);font-size:0.85rem;text-align:center;padding:16px;">Nenhum exercício encontrado.</p>';
+            return;
+        }
+
+        Object.entries(data).forEach(([categoria, exercicios]) => {
+            const catDiv = document.createElement('div');
+            catDiv.className = 'ex-categoria-grupo';
+            catDiv.innerHTML = `<div class="ex-cat-label">${getCatIcon(categoria)} ${categoria}</div>`;
+
+            exercicios.forEach(ex => {
+                const btn = document.createElement('button');
+                btn.className = 'ex-item-btn';
+                btn.innerHTML = `<span>${ex.nome}</span><span class="ex-add-icon">+</span>`;
+                btn.onclick = () => adicionarExercicio(ex);
+                catDiv.appendChild(btn);
+            });
+
+            container.appendChild(catDiv);
+        });
+    }
+
+    function adicionarExercicio(ex) {
+        // Verifica se já está no plano
+        if (planoAtual.find(e => e.exercicioId === ex.id)) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Já adicionado',
+                text: `${ex.nome} já está no plano.`,
+                confirmButtonColor: '#8A2BE2',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        planoAtual.push({
+            exercicioId: ex.id,
+            nome: ex.nome,
+            categoria: ex.categoria,
+            series: 3,
+            repeticoes: 12,
+            peso: 0
+        });
+        renderizarPlano();
+
+        // Feedback visual no botão
+        Swal.fire({
+            icon: 'success',
+            title: `${ex.nome} adicionado!`,
+            timer: 1000,
+            showConfirmButton: false,
+            position: 'bottom-end',
+            toast: true
+        });
+    }
+
+    function getCatIcon(cat) {
+        const icons = {
+            'Peito': '🏋️', 'Costas': '💪', 'Pernas': '🦵',
+            'Ombros': '🔝', 'Bíceps': '💪', 'Tríceps': '💪',
+            'Abdômen': '🎯', 'Cardio': '🏃'
         };
+        return icons[cat] || '⚡';
+    }
+
+    // ===== SALVAR PLANO =====
+    document.getElementById('btn-salvar-plano').addEventListener('click', function () {
+        if (!alunoSelecionadoId) return;
+        if (planoAtual.length === 0) {
+            Swal.fire({ icon: 'warning', title: 'Plano vazio', text: 'Adicione ao menos um exercício.', confirmButtonColor: '#8A2BE2' });
+            return;
+        }
+
+        const btn = this;
+        btn.textContent = 'Salvando...';
+        btn.disabled = true;
+
+        const headers = { 'Content-Type': 'application/json' };
         headers[getCsrfHeader()] = getCsrfToken();
 
-        fetch('/api/treinador/salvar-plano', {
+        fetch('/api/treinador/salvar-plano-exercicios', {
             method: 'POST',
             headers: headers,
-            body: params
+            body: JSON.stringify({ alunoId: alunoSelecionadoId, exercicios: planoAtual })
         })
-            .then(response => response.json())
+            .then(r => r.json())
             .then(data => {
-                const isDarkMode = document.documentElement.classList.contains('dark-mode');
-                if (data.status === 'success') {
-                    Swal.fire({
-                        title: 'Tudo certo!',
-                        text: 'O plano do aluno foi salvo com sucesso.',
-                        icon: 'success',
-                        confirmButtonText: 'Ótimo',
-                        confirmButtonColor: '#8A2BE2',
-                        background: isDarkMode ? '#1e1e1e' : '#ffffff',
-                        color: isDarkMode ? '#ffffff' : '#333333'
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Ops...',
-                        text: data.message || 'Erro ao salvar.',
-                        icon: 'error',
-                        confirmButtonColor: '#d33'
-                    });
-                }
-            })
-            .catch(error => {
+                const dark = document.documentElement.classList.contains('dark-mode');
                 Swal.fire({
-                    title: 'Erro de Conexão',
-                    text: 'Verifique sua internet e tente novamente.',
-                    icon: 'warning',
-                    confirmButtonColor: '#8A2BE2'
+                    title: 'Plano salvo!',
+                    text: 'O treino do aluno foi atualizado.',
+                    icon: 'success',
+                    confirmButtonColor: '#8A2BE2',
+                    background: dark ? '#16162a' : '#fff',
+                    color: dark ? '#f0eeff' : '#1a1a2e'
                 });
             })
             .finally(() => {
-                btnSalvar.innerText = textoOriginal;
-                btnSalvar.disabled = false;
-                btnSalvar.style.opacity = "1";
+                btn.textContent = '💾 Salvar Plano';
+                btn.disabled = false;
             });
     });
 
-    function fecharModalFoto() {
-        document.getElementById('modal-foto').classList.remove('open');
-    }
-
-    function abrirModalFoto() {
-        document.getElementById('modal-foto').classList.add('open');
-    }
-
-    document.getElementById('modal-foto').addEventListener('click', function(e) {
-        if (e.target === this) fecharModalFoto();
+    // ===== BUSCA E FILTRO =====
+    document.getElementById('busca-exercicio').addEventListener('input', function () {
+        carregarExercicios(this.value, document.getElementById('filtro-categoria').value);
     });
 
-    document.querySelectorAll('a').forEach(link => {
-        if (link.textContent.trim() === "Meu Perfil") {
-            link.href = "javascript:void(0)";
-            link.addEventListener('click', abrirModalFoto);
-        }
+    document.getElementById('filtro-categoria').addEventListener('change', function () {
+        carregarExercicios(document.getElementById('busca-exercicio').value, this.value);
     });
 
     carregarAlunos();
