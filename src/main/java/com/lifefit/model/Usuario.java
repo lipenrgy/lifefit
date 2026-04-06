@@ -19,4 +19,10 @@ public class Usuario {
     private Long meuTreinadorId;
     private Long meuNutricionistaId;
     private String foto;
+
+    // Dados físicos do aluno
+    private Double peso;
+    private Integer alturaCm;
+    private Integer idade;
+    private String nivelAtividade;
 }

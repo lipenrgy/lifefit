@@ -16,8 +16,64 @@
             else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
                 document.documentElement.classList.add('dark-mode');
         })();
+
+
+
+        // Form dados físicos
+        const formDadosFisicos = document.getElementById('form-dados-fisicos');
+        if (formDadosFisicos) {
+            // Atualiza IMC em tempo real
+            function calcularIMC() {
+                const peso = parseFloat(document.getElementById('peso-input').value);
+                const altura = parseFloat(document.getElementById('altura-input').value);
+                if (peso > 0 && altura > 0) {
+                    const alturaM = altura / 100;
+                    const imc = (peso / (alturaM * alturaM)).toFixed(1);
+                    const display = document.getElementById('imc-display');
+                    const valor = document.getElementById('imc-valor');
+                    if (display) { display.style.display = 'flex'; valor.textContent = imc; }
+                    else {
+                        // Cria o display se não existir
+                        const div = document.createElement('div');
+                        div.id = 'imc-display';
+                        div.style.cssText = 'margin:16px 0;padding:14px 18px;background:var(--violeta-claro);border-radius:12px;border:1px solid rgba(138,43,226,0.2);display:flex;align-items:center;gap:12px;';
+                        div.innerHTML = `<span style="font-size:1.4rem;">📏</span><div><p style="font-size:0.78rem;color:var(--texto-secundario);margin:0;">Seu IMC atual</p><strong id="imc-valor" style="font-size:1.1rem;color:var(--violeta);">${imc}</strong></div>`;
+                        formDadosFisicos.querySelector('button').before(div);
+                    }
+                }
+            }
+
+            document.getElementById('peso-input').addEventListener('input', calcularIMC);
+            document.getElementById('altura-input').addEventListener('input', calcularIMC);
+
+            formDadosFisicos.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const params = new URLSearchParams({
+                    peso: document.getElementById('peso-input').value || '',
+                    alturaCm: document.getElementById('altura-input').value || '',
+                    idade: document.getElementById('idade-input').value || '',
+                    nivelAtividade: document.getElementById('nivel-input').value || ''
+                });
+                salvar('/api/atualizar-dados-fisicos', Object.fromEntries(params))
+                    .then(data => {
+                        if (data.status === 'success') {
+                            Swal.fire({ icon: 'success', title: 'Salvo!', text: data.message, confirmButtonColor: '#8A2BE2' })
+                                .then(() => location.reload());
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Erro', text: data.message, confirmButtonColor: '#d33' });
+                        }
+                    });
+            });
+        }
+
+
+
+
     </script>
 </head>
+
+
+
 <body>
 
 <div th:replace="~{fragments/header :: header(${usuario})}"></div>
@@ -50,6 +106,82 @@
                     <button type="submit" class="btn-atualizar-foto" style="margin-top:8px;">Salvar foto</button>
                 </div>
             </div>
+        </form>
+    </div>
+
+    <!-- DADOS FÍSICOS (só para alunos) -->
+    <div class="config-card" th:if="${usuario.tipo == 'aluno'}">
+        <div class="config-card-header">
+            <div class="config-card-icon">📊</div>
+            <div>
+                <h2>Dados Físicos</h2>
+                <p>Informações para seu treinador acompanhar sua evolução</p>
+            </div>
+        </div>
+
+        <form id="form-dados-fisicos">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div class="form-group">
+                    <label for="peso">Peso (kg)</label>
+                    <input type="number" id="peso-input" name="peso" step="0.1" placeholder="Ex: 75.5"
+                           th:value="${usuario.peso}">
+                </div>
+                <div class="form-group">
+                    <label for="altura">Altura (cm)</label>
+                    <input type="number" id="altura-input" name="alturaCm" placeholder="Ex: 175"
+                           th:value="${usuario.alturaCm}">
+                </div>
+                <div class="form-group">
+                    <label for="idade">Idade</label>
+                    <input type="number" id="idade-input" name="idade" placeholder="Ex: 25"
+                           th:value="${usuario.idade}">
+                </div>
+                <div class="form-group">
+                    <label>Nível de Atividade</label>
+                    <select id="nivel-input" name="nivelAtividade" style="
+                    width:100%; padding:12px 16px;
+                    border:1.5px solid var(--borda); border-radius:12px;
+                    background:var(--fundo-primario); color:var(--texto-primario);
+                    font-size:0.92rem; font-family:'Poppins',sans-serif;
+                    outline:none; cursor:pointer;">
+                        <option value="">Selecionar...</option>
+                        <option value="Sedentário"
+                                th:selected="${usuario.nivelAtividade == 'Sedentário'}">
+                            🪑 Sedentário
+                        </option>
+                        <option value="Levemente ativo"
+                                th:selected="${usuario.nivelAtividade == 'Levemente ativo'}">
+                            🚶 Levemente ativo
+                        </option>
+                        <option value="Moderadamente ativo"
+                                th:selected="${usuario.nivelAtividade == 'Moderadamente ativo'}">
+                            🏃 Moderadamente ativo
+                        </option>
+                        <option value="Muito ativo"
+                                th:selected="${usuario.nivelAtividade == 'Muito ativo'}">
+                            ⚡ Muito ativo
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- IMC calculado automaticamente -->
+            <div id="imc-display" th:if="${usuario.peso != null and usuario.alturaCm != null}"
+                 style="margin:16px 0;padding:14px 18px;background:var(--violeta-claro);
+                    border-radius:12px;border:1px solid rgba(138,43,226,0.2);
+                    display:flex;align-items:center;gap:12px;">
+                <span style="font-size:1.4rem;">📏</span>
+                <div>
+                    <p style="font-size:0.78rem;color:var(--texto-secundario);margin:0;">Seu IMC atual</p>
+                    <strong style="font-size:1.1rem;color:var(--violeta);" id="imc-valor">
+                    <span th:if="${usuario.peso != null and usuario.alturaCm != null}"
+                          th:text="${#numbers.formatDecimal(usuario.peso / ((usuario.alturaCm / 100.0) * (usuario.alturaCm / 100.0)), 1, 1)}">
+                    </span>
+                    </strong>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-salvar">Salvar dados físicos</button>
         </form>
     </div>
 
