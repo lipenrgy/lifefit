@@ -57,6 +57,32 @@ document.addEventListener('DOMContentLoaded', function () {
                 planoAtual = data;
                 renderizarPlano();
             });
+        // Busca dados físicos do aluno
+        fetch(`/api/treinador/dados-aluno?alunoId=${id}`)
+            .then(r => r.json())
+            .then(dados => {
+                const card = document.getElementById('card-dados-aluno');
+                const grid = document.getElementById('dados-aluno-grid');
+                card.style.display = 'block';
+
+                const itens = [
+                    { label: 'Peso', valor: dados.peso ? dados.peso + ' kg' : '—' },
+                    { label: 'Altura', valor: dados.alturaCm ? dados.alturaCm + ' cm' : '—' },
+                    { label: 'Idade', valor: dados.idade ? dados.idade + ' anos' : '—' },
+                    { label: 'IMC', valor: dados.imc ? dados.imc : '—' },
+                    { label: 'Nível', valor: dados.nivelAtividade || '—' }
+                ];
+
+                grid.innerHTML = itens.map(item => `
+            <div style="background:var(--fundo-primario);border-radius:10px;
+                        padding:10px 12px;border:1px solid var(--borda);">
+                <p style="font-size:0.7rem;color:var(--texto-secundario);margin:0 0 2px;font-weight:600;">
+                    ${item.label}
+                </p>
+                <strong style="font-size:0.9rem;color:var(--violeta);">${item.valor}</strong>
+            </div>
+        `).join('');
+            });
 
         // Carrega lista de exercícios disponíveis
         carregarExercicios();

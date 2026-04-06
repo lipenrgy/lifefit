@@ -59,4 +59,28 @@ public class ConfiguracoesController {
         response.put("message", "Dados atualizados com sucesso!");
         return ResponseEntity.ok(response);
     }
+
+
+    @PostMapping("/api/atualizar-dados-fisicos")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> atualizarDadosFisicos(
+            @RequestParam(required = false) Double peso,
+            @RequestParam(required = false) Integer alturaCm,
+            @RequestParam(required = false) Integer idade,
+            @RequestParam(required = false) String nivelAtividade,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Map<String, Object> response = new HashMap<>();
+        Usuario usuario = usuarioRepository.findByEmail(userDetails.getUsername()).orElseThrow();
+
+        if (peso != null) usuario.setPeso(peso);
+        if (alturaCm != null) usuario.setAlturaCm(alturaCm);
+        if (idade != null) usuario.setIdade(idade);
+        if (nivelAtividade != null && !nivelAtividade.isBlank()) usuario.setNivelAtividade(nivelAtividade);
+
+        usuarioRepository.save(usuario);
+        response.put("status", "success");
+        response.put("message", "Dados físicos atualizados!");
+        return ResponseEntity.ok(response);
+    }
 }

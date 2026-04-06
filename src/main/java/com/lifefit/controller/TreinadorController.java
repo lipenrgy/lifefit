@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.transaction.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -50,7 +49,6 @@ public class TreinadorController {
         return resultado;
     }
 
-    // Busca todos os exercícios agrupados por categoria
     @GetMapping("/api/treinador/exercicios")
     @ResponseBody
     public Map<String, List<Map<String, Object>>> buscarExercicios(
@@ -74,7 +72,6 @@ public class TreinadorController {
         return agrupado;
     }
 
-    // Busca exercícios do plano de um aluno
     @GetMapping("/api/treinador/plano-exercicios")
     @ResponseBody
     public List<Map<String, Object>> buscarPlanoExercicios(
@@ -106,7 +103,6 @@ public class TreinadorController {
         return resultado;
     }
 
-    // Salva plano completo de exercícios
     @PostMapping("/api/treinador/salvar-plano-exercicios")
     @ResponseBody
     @Transactional
@@ -126,7 +122,6 @@ public class TreinadorController {
         plano.setProfissionalId(profissional.getId());
         planoRepository.save(plano);
 
-        // Remove exercícios antigos e salva os novos
         planoExercicioRepository.deleteByPlanoId(plano.getId());
 
         List<Map<String, Object>> exercicios = (List<Map<String, Object>>) body.get("exercicios");
@@ -186,5 +181,29 @@ public class TreinadorController {
         response.put("status", "success");
         response.put("message", "Plano salvo com sucesso!");
         return ResponseEntity.ok(response);
+    }
+
+    // Busca dados físicos do aluno para o treinador ver
+    @GetMapping("/api/treinador/dados-aluno")
+    @ResponseBody
+    public Map<String, Object> dadosAluno(
+            @RequestParam Long alunoId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        Map<String, Object> response = new HashMap<>();
+        usuarioRepository.findById(alunoId).ifPresent(aluno -> {
+            response.put("nome", aluno.getNome());
+            response.put("peso", aluno.getPeso());
+            response.put("alturaCm", aluno.getAlturaCm());
+            response.put("idade", aluno.getIdade());
+            response.put("nivelAtividade", aluno.getNivelAtividade());
+
+            if (aluno.getPeso() != null && aluno.getAlturaCm() != null && aluno.getAlturaCm() > 0) {
+                double alturaM = aluno.getAlturaCm() / 100.0;
+                double imc = aluno.getPeso() / (alturaM * alturaM);
+                response.put("imc", String.format("%.1f", imc));
+            }
+        });
+        return response;
     }
 }
