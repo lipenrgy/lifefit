@@ -3,11 +3,307 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Profissional — Life Fit</title>
+    <title>Life Fit — Painel Profissional</title>
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
     <link rel="stylesheet" th:href="@{/painel.css}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .treinador-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr 1fr;
+            gap: 20px;
+            padding: 20px 30px;
+            max-width: 1300px;
+            margin: 0 auto;
+            height: calc(100vh - 100px);
+        }
+
+        /* COLUNA 1 - ALUNOS */
+        .col-alunos {
+            background: var(--fundo-secundario);
+            border-radius: 20px;
+            border: 1px solid var(--borda);
+            box-shadow: var(--sombra);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .col-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--borda);
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--texto-primario);
+        }
+        #alunos-ul {
+            list-style: none;
+            padding: 8px 0;
+            margin: 0;
+            overflow-y: auto;
+            flex: 1;
+        }
+        #alunos-ul li {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            color: var(--texto-secundario);
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        #alunos-ul li:hover { background: var(--violeta-claro); color: var(--violeta); }
+        #alunos-ul li.active {
+            background: var(--violeta-claro);
+            color: var(--violeta);
+            font-weight: 600;
+            border-left-color: var(--violeta);
+        }
+
+        /* COLUNA 2 - EXERCÍCIOS DISPONÍVEIS */
+        .col-exercicios {
+            background: var(--fundo-secundario);
+            border-radius: 20px;
+            border: 1px solid var(--borda);
+            box-shadow: var(--sombra);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ex-filtros {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--borda);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .ex-search {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--borda);
+            border-radius: 50px;
+            background: var(--fundo-primario);
+            color: var(--texto-primario);
+            font-size: 0.88rem;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .ex-search:focus { border-color: var(--violeta); }
+
+        .ex-filtro-cats {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .ex-filtro-cats::-webkit-scrollbar { height: 3px; }
+        .ex-filtro-cats::-webkit-scrollbar-thumb { background: var(--violeta); border-radius: 2px; }
+
+        #filtro-categoria {
+            padding: 6px 12px;
+            border: 1.5px solid var(--borda);
+            border-radius: 50px;
+            background: var(--fundo-primario);
+            color: var(--texto-secundario);
+            font-size: 0.8rem;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            outline: none;
+        }
+
+        #lista-exercicios {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .ex-categoria-grupo { margin-bottom: 4px; }
+        .ex-cat-label {
+            padding: 8px 16px 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--violeta);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .ex-item-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.86rem;
+            font-family: 'Poppins', sans-serif;
+            color: var(--texto-primario);
+            text-align: left;
+            transition: background 0.15s;
+            border-left: 3px solid transparent;
+        }
+        .ex-item-btn:hover {
+            background: var(--violeta-claro);
+            color: var(--violeta);
+            border-left-color: var(--violeta);
+        }
+        .ex-add-icon {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--violeta);
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+        .ex-item-btn:hover .ex-add-icon { opacity: 1; }
+
+        /* COLUNA 3 - PLANO DO ALUNO */
+        .col-plano {
+            background: var(--fundo-secundario);
+            border-radius: 20px;
+            border: 1px solid var(--borda);
+            box-shadow: var(--sombra);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .col-plano-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--borda);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .col-plano-header h2 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--texto-primario);
+            margin: 0;
+        }
+
+        #plano-atual {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .plano-categoria { margin-bottom: 8px; }
+        .plano-cat-header {
+            padding: 8px 16px 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--violeta);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .plano-exercicio-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--borda);
+            gap: 8px;
+        }
+
+        .plano-ex-info { flex: 1; }
+        .plano-ex-nome {
+            display: block;
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: var(--texto-primario);
+            margin-bottom: 6px;
+        }
+
+        .plano-ex-config {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .config-input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+        .config-input-group label {
+            font-size: 0.65rem;
+            color: var(--texto-secundario);
+            font-weight: 600;
+        }
+        .config-input {
+            width: 52px;
+            padding: 5px 6px;
+            border: 1.5px solid var(--borda);
+            border-radius: 8px;
+            background: var(--fundo-primario);
+            color: var(--texto-primario);
+            font-size: 0.85rem;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .config-input:focus { border-color: var(--violeta); }
+
+        .config-sep {
+            font-size: 1rem;
+            color: var(--texto-secundario);
+            margin-top: 14px;
+        }
+
+        .btn-remover-ex {
+            background: none;
+            border: none;
+            color: var(--texto-secundario);
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .btn-remover-ex:hover { background: rgba(220,53,69,0.1); color: #dc3545; }
+
+        .col-plano-footer {
+            padding: 14px 16px;
+            border-top: 1px solid var(--borda);
+        }
+
+        #btn-salvar-plano {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--violeta), var(--violeta-escuro));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.92rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(138,43,226,0.3);
+        }
+        #btn-salvar-plano:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(138,43,226,0.4); }
+        #btn-salvar-plano:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .placeholder-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--texto-secundario);
+            opacity: 0.5;
+            font-size: 0.88rem;
+            text-align: center;
+            gap: 8px;
+        }
+    </style>
     <script>
         (function() {
             const t = localStorage.getItem('theme');
@@ -22,42 +318,64 @@
 <input type="hidden" id="tipo-usuario-logado" th:value="${usuario.tipo}">
 <div th:replace="~{fragments/header :: header(${usuario})}"></div>
 
-<main class="painel-container">
+<div class="treinador-layout">
 
-    <aside class="lista-alunos">
-        <h2>👥 Meus Alunos</h2>
+    <!-- COLUNA 1: ALUNOS -->
+    <div class="col-alunos">
+        <div class="col-header">👥 Meus Alunos</div>
         <ul id="alunos-ul">
-            <li style="color:var(--texto-secundario);padding:16px 20px;font-size:0.88rem;">
-                Carregando...
-            </li>
+            <li style="color:var(--texto-secundario);">Carregando...</li>
         </ul>
-    </aside>
+    </div>
 
-    <section class="area-plano">
-        <h2 id="aluno-selecionado-nome">Selecione um aluno</h2>
-
-        <form id="form-plano" class="hidden">
-            <input type="hidden" id="aluno-id-hidden" name="aluno_id">
-
-            <div th:if="${usuario.tipo == 'treinador'}">
-                <label style="font-size:0.85rem;font-weight:600;color:var(--texto-secundario);display:block;margin-bottom:8px;">
-                    Plano de Treino
-                </label>
-                <textarea id="treino" name="treino" placeholder="Descreva a rotina de exercícios..."></textarea>
+    <!-- COLUNA 2: EXERCÍCIOS -->
+    <div class="col-exercicios">
+        <div class="col-header">⚡ Exercícios</div>
+        <div class="ex-filtros">
+            <input type="text" id="busca-exercicio" class="ex-search"
+                   placeholder="🔍 Buscar exercício...">
+            <select id="filtro-categoria">
+                <option value="Todos">Todas as categorias</option>
+                <option value="Peito">🏋️ Peito</option>
+                <option value="Costas">💪 Costas</option>
+                <option value="Pernas">🦵 Pernas</option>
+                <option value="Ombros">🔝 Ombros</option>
+                <option value="Bíceps">💪 Bíceps</option>
+                <option value="Tríceps">💪 Tríceps</option>
+                <option value="Abdômen">🎯 Abdômen</option>
+                <option value="Cardio">🏃 Cardio</option>
+            </select>
+        </div>
+        <div id="lista-exercicios">
+            <div class="placeholder-col">
+                <span style="font-size:2rem;">👈</span>
+                <p>Selecione um aluno<br>para ver os exercícios</p>
             </div>
+        </div>
+    </div>
 
-            <div th:if="${usuario.tipo == 'nutricionista'}">
-                <label style="font-size:0.85rem;font-weight:600;color:var(--texto-secundario);display:block;margin-bottom:8px;">
-                    Plano de Dieta
-                </label>
-                <textarea id="dieta" name="dieta" placeholder="Descreva o plano alimentar..."></textarea>
+    <!-- COLUNA 3: PLANO -->
+    <div class="col-plano">
+        <div class="col-plano-header">
+            <h2 id="aluno-selecionado-nome">📋 Plano do Aluno</h2>
+        </div>
+
+        <input type="hidden" id="aluno-id-hidden">
+
+        <div id="form-plano" class="hidden" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+            <div id="plano-atual" style="flex:1;overflow-y:auto;"></div>
+            <div class="col-plano-footer">
+                <button id="btn-salvar-plano">💾 Salvar Plano</button>
             </div>
+        </div>
 
-            <button type="submit">💾 Salvar Plano</button>
-        </form>
-    </section>
+        <div id="placeholder-plano" class="placeholder-col">
+            <span style="font-size:2.5rem;">📋</span>
+            <p>Selecione um aluno<br>para montar o treino</p>
+        </div>
+    </div>
 
-</main>
+</div>
 
 <script th:src="@{/painel_treinador.js}"></script>
 <script th:src="@{/theme-toggle.js}"></script>
