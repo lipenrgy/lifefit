@@ -16,64 +16,8 @@
             else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
                 document.documentElement.classList.add('dark-mode');
         })();
-
-
-
-        // Form dados físicos
-        const formDadosFisicos = document.getElementById('form-dados-fisicos');
-        if (formDadosFisicos) {
-            // Atualiza IMC em tempo real
-            function calcularIMC() {
-                const peso = parseFloat(document.getElementById('peso-input').value);
-                const altura = parseFloat(document.getElementById('altura-input').value);
-                if (peso > 0 && altura > 0) {
-                    const alturaM = altura / 100;
-                    const imc = (peso / (alturaM * alturaM)).toFixed(1);
-                    const display = document.getElementById('imc-display');
-                    const valor = document.getElementById('imc-valor');
-                    if (display) { display.style.display = 'flex'; valor.textContent = imc; }
-                    else {
-                        // Cria o display se não existir
-                        const div = document.createElement('div');
-                        div.id = 'imc-display';
-                        div.style.cssText = 'margin:16px 0;padding:14px 18px;background:var(--violeta-claro);border-radius:12px;border:1px solid rgba(138,43,226,0.2);display:flex;align-items:center;gap:12px;';
-                        div.innerHTML = `<span style="font-size:1.4rem;">📏</span><div><p style="font-size:0.78rem;color:var(--texto-secundario);margin:0;">Seu IMC atual</p><strong id="imc-valor" style="font-size:1.1rem;color:var(--violeta);">${imc}</strong></div>`;
-                        formDadosFisicos.querySelector('button').before(div);
-                    }
-                }
-            }
-
-            document.getElementById('peso-input').addEventListener('input', calcularIMC);
-            document.getElementById('altura-input').addEventListener('input', calcularIMC);
-
-            formDadosFisicos.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const params = new URLSearchParams({
-                    peso: document.getElementById('peso-input').value || '',
-                    alturaCm: document.getElementById('altura-input').value || '',
-                    idade: document.getElementById('idade-input').value || '',
-                    nivelAtividade: document.getElementById('nivel-input').value || ''
-                });
-                salvar('/api/atualizar-dados-fisicos', Object.fromEntries(params))
-                    .then(data => {
-                        if (data.status === 'success') {
-                            Swal.fire({ icon: 'success', title: 'Salvo!', text: data.message, confirmButtonColor: '#8A2BE2' })
-                                .then(() => location.reload());
-                        } else {
-                            Swal.fire({ icon: 'error', title: 'Erro', text: data.message, confirmButtonColor: '#d33' });
-                        }
-                    });
-            });
-        }
-
-
-
-
     </script>
 </head>
-
-
-
 <body>
 
 <div th:replace="~{fragments/header :: header(${usuario})}"></div>
@@ -89,7 +33,6 @@
                 <p>Atualize sua foto de perfil</p>
             </div>
         </div>
-
         <form th:action="@{/api/upload-foto}" method="POST" enctype="multipart/form-data">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <div class="foto-perfil-area">
@@ -118,65 +61,51 @@
                 <p>Informações para seu treinador acompanhar sua evolução</p>
             </div>
         </div>
-
         <form id="form-dados-fisicos">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                 <div class="form-group">
-                    <label for="peso">Peso (kg)</label>
-                    <input type="number" id="peso-input" name="peso" step="0.1" placeholder="Ex: 75.5"
-                           th:value="${usuario.peso}">
+                    <label>Peso (kg)</label>
+                    <input type="number" id="peso-input" name="peso" step="0.1"
+                           placeholder="Ex: 75.5" th:value="${usuario.peso}">
                 </div>
                 <div class="form-group">
-                    <label for="altura">Altura (cm)</label>
-                    <input type="number" id="altura-input" name="alturaCm" placeholder="Ex: 175"
-                           th:value="${usuario.alturaCm}">
+                    <label>Altura (cm)</label>
+                    <input type="number" id="altura-input" name="alturaCm"
+                           placeholder="Ex: 175" th:value="${usuario.alturaCm}">
                 </div>
                 <div class="form-group">
-                    <label for="idade">Idade</label>
-                    <input type="number" id="idade-input" name="idade" placeholder="Ex: 25"
-                           th:value="${usuario.idade}">
+                    <label>Idade</label>
+                    <input type="number" id="idade-input" name="idade"
+                           placeholder="Ex: 25" th:value="${usuario.idade}">
                 </div>
                 <div class="form-group">
                     <label>Nível de Atividade</label>
                     <select id="nivel-input" name="nivelAtividade" style="
-                    width:100%; padding:12px 16px;
-                    border:1.5px solid var(--borda); border-radius:12px;
-                    background:var(--fundo-primario); color:var(--texto-primario);
-                    font-size:0.92rem; font-family:'Poppins',sans-serif;
-                    outline:none; cursor:pointer;">
+                        width:100%;padding:12px 16px;border:1.5px solid var(--borda);
+                        border-radius:12px;background:var(--fundo-primario);
+                        color:var(--texto-primario);font-size:0.92rem;
+                        font-family:'Poppins',sans-serif;outline:none;cursor:pointer;">
                         <option value="">Selecionar...</option>
-                        <option value="Sedentário"
-                                th:selected="${usuario.nivelAtividade == 'Sedentário'}">
-                            🪑 Sedentário
-                        </option>
-                        <option value="Levemente ativo"
-                                th:selected="${usuario.nivelAtividade == 'Levemente ativo'}">
-                            🚶 Levemente ativo
-                        </option>
-                        <option value="Moderadamente ativo"
-                                th:selected="${usuario.nivelAtividade == 'Moderadamente ativo'}">
-                            🏃 Moderadamente ativo
-                        </option>
-                        <option value="Muito ativo"
-                                th:selected="${usuario.nivelAtividade == 'Muito ativo'}">
-                            ⚡ Muito ativo
-                        </option>
+                        <option value="Sedentário" th:selected="${usuario.nivelAtividade == 'Sedentário'}">🪑 Sedentário</option>
+                        <option value="Levemente ativo" th:selected="${usuario.nivelAtividade == 'Levemente ativo'}">🚶 Levemente ativo</option>
+                        <option value="Moderadamente ativo" th:selected="${usuario.nivelAtividade == 'Moderadamente ativo'}">🏃 Moderadamente ativo</option>
+                        <option value="Muito ativo" th:selected="${usuario.nivelAtividade == 'Muito ativo'}">⚡ Muito ativo</option>
                     </select>
                 </div>
             </div>
 
-            <!-- IMC calculado automaticamente -->
-            <div id="imc-display" th:if="${usuario.peso != null and usuario.alturaCm != null}"
+            <div id="imc-display"
+                 th:if="${usuario.peso != null and usuario.alturaCm != null}"
                  style="margin:16px 0;padding:14px 18px;background:var(--violeta-claro);
-                    border-radius:12px;border:1px solid rgba(138,43,226,0.2);
-                    display:flex;align-items:center;gap:12px;">
+                        border-radius:12px;border:1px solid rgba(138,43,226,0.2);
+                        display:flex;align-items:center;gap:12px;">
                 <span style="font-size:1.4rem;">📏</span>
                 <div>
                     <p style="font-size:0.78rem;color:var(--texto-secundario);margin:0;">Seu IMC atual</p>
-                    <strong style="font-size:1.1rem;color:var(--violeta);" id="imc-valor">
-                    <span th:if="${usuario.peso != null and usuario.alturaCm != null}"
-                          th:text="${#numbers.formatDecimal(usuario.peso / ((usuario.alturaCm / 100.0) * (usuario.alturaCm / 100.0)), 1, 1)}">
-                    </span>
+                    <strong style="font-size:1.1rem;color:var(--violeta);" id="imc-valor"
+                            th:text="${#numbers.formatDecimal(
+                                usuario.peso / ((usuario.alturaCm / 100.0) * (usuario.alturaCm / 100.0)),
+                                1, 1)}">
                     </strong>
                 </div>
             </div>
@@ -194,7 +123,6 @@
                 <p>Atualize suas informações pessoais</p>
             </div>
         </div>
-
         <form id="form-config">
             <div class="form-group">
                 <label for="nome">Nome completo</label>
@@ -213,7 +141,6 @@
                 <p>Preencha apenas se quiser trocar a senha</p>
             </div>
         </div>
-
         <form id="form-senha">
             <div class="form-group">
                 <label for="nova_senha">Nova senha</label>
@@ -237,6 +164,9 @@
 
 <script th:src="@{/theme-toggle.js}"></script>
 <script>
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
     function previewFoto(input) {
         document.getElementById('nome-arquivo').textContent =
             input.files[0] ? input.files[0].name : 'Nenhum arquivo selecionado';
@@ -263,9 +193,6 @@
         else { input.type = 'password'; el.textContent = '👁️'; }
     }
 
-    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-
     function salvar(url, params) {
         const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
         headers[csrfHeader] = csrfToken;
@@ -273,6 +200,62 @@
             .then(r => r.json());
     }
 
+    // Form dados físicos
+    const formDadosFisicos = document.getElementById('form-dados-fisicos');
+    if (formDadosFisicos) {
+        function calcularIMC() {
+            const peso = parseFloat(document.getElementById('peso-input').value);
+            const altura = parseFloat(document.getElementById('altura-input').value);
+            if (peso > 0 && altura > 0) {
+                const alturaM = altura / 100;
+                const imc = (peso / (alturaM * alturaM)).toFixed(1);
+                let display = document.getElementById('imc-display');
+                if (display) {
+                    display.style.display = 'flex';
+                    document.getElementById('imc-valor').textContent = imc;
+                } else {
+                    const div = document.createElement('div');
+                    div.id = 'imc-display';
+                    div.style.cssText = 'margin:16px 0;padding:14px 18px;background:var(--violeta-claro);border-radius:12px;border:1px solid rgba(138,43,226,0.2);display:flex;align-items:center;gap:12px;';
+                    div.innerHTML = `<span style="font-size:1.4rem;">📏</span><div><p style="font-size:0.78rem;color:var(--texto-secundario);margin:0;">Seu IMC atual</p><strong id="imc-valor" style="font-size:1.1rem;color:var(--violeta);">${imc}</strong></div>`;
+                    formDadosFisicos.querySelector('button[type="submit"]').before(div);
+                }
+            }
+        }
+
+        document.getElementById('peso-input').addEventListener('input', calcularIMC);
+        document.getElementById('altura-input').addEventListener('input', calcularIMC);
+
+        formDadosFisicos.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+            headers[csrfHeader] = csrfToken;
+
+            const params = new URLSearchParams({
+                peso: document.getElementById('peso-input').value || '',
+                alturaCm: document.getElementById('altura-input').value || '',
+                idade: document.getElementById('idade-input').value || '',
+                nivelAtividade: document.getElementById('nivel-input').value || ''
+            });
+
+            fetch('/api/atualizar-dados-fisicos', {
+                method: 'POST',
+                headers: headers,
+                body: params
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        Swal.fire({ icon: 'success', title: 'Salvo!', text: data.message, confirmButtonColor: '#8A2BE2' })
+                            .then(() => location.reload());
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Erro', text: data.message, confirmButtonColor: '#d33' });
+                    }
+                });
+        });
+    }
+
+    // Form nome
     document.getElementById('form-config').addEventListener('submit', function(e) {
         e.preventDefault();
         salvar('/api/atualizar-perfil', { nome: document.getElementById('nome').value, nova_senha: '' })
@@ -286,6 +269,7 @@
             });
     });
 
+    // Form senha
     document.getElementById('form-senha').addEventListener('submit', function(e) {
         e.preventDefault();
         const nova = document.getElementById('nova_senha').value;
