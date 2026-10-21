@@ -1,5 +1,6 @@
 package com.lifefit.controller;
 
+import com.lifefit.model.Exercicio;
 import com.lifefit.model.Plano;
 import com.lifefit.model.PlanoExercicio;
 import com.lifefit.model.Usuario;
@@ -18,6 +19,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -79,16 +82,20 @@ public class AlunoController {
                     .ifPresent(plano -> {
                         List<PlanoExercicio> itens = planoExercicioRepository
                                 .findByPlanoIdOrderByOrdemAsc(plano.getId());
+                        Map<Long, Exercicio> exerciciosPorId = exercicioRepository
+                                .findAllById(itens.stream().map(PlanoExercicio::getExercicioId).toList())
+                                .stream()
+                                .collect(Collectors.toMap(Exercicio::getId, Function.identity()));
                         for (PlanoExercicio pe : itens) {
-                            exercicioRepository.findById(pe.getExercicioId()).ifPresent(ex -> {
-                                Map<String, Object> map = new HashMap<>();
-                                map.put("nome", ex.getNome());
-                                map.put("categoria", ex.getCategoria());
-                                map.put("series", pe.getSeries());
-                                map.put("repeticoes", pe.getRepeticoes());
-                                map.put("peso", pe.getPeso());
-                                exercicios.add(map);
-                            });
+                            Exercicio ex = exerciciosPorId.get(pe.getExercicioId());
+                            if (ex == null) continue;
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("nome", ex.getNome());
+                            map.put("categoria", ex.getCategoria());
+                            map.put("series", pe.getSeries());
+                            map.put("repeticoes", pe.getRepeticoes());
+                            map.put("peso", pe.getPeso());
+                            exercicios.add(map);
                         }
                     });
         }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,9 +51,21 @@ public class UploadController {
         String novoNome = "perfil_" + usuario.getId() + "." + extensao;
 
         try {
+            // Confere o conteúdo, não só a extensão
+            if (ImageIO.read(arquivo.getInputStream()) == null) {
+                redirectAttributes.addFlashAttribute("erro", "O arquivo enviado não é uma imagem válida.");
+                return redirectDestino(usuario.getTipo());
+            }
+
             Path pastaUpload = Paths.get(UPLOAD_DIR);
             if (!Files.exists(pastaUpload)) {
                 Files.createDirectories(pastaUpload);
+            }
+
+            // Remove a foto anterior se ela tinha outra extensão
+            String fotoAntiga = usuario.getFoto();
+            if (fotoAntiga != null && !fotoAntiga.equals(novoNome)) {
+                Files.deleteIfExists(pastaUpload.resolve(fotoAntiga));
             }
 
             Path destino = pastaUpload.resolve(novoNome);
@@ -70,12 +83,8 @@ public class UploadController {
         return redirectDestino(usuario.getTipo());
     }
 
+    // O formulário de foto fica em Configurações, então a mensagem aparece lá
     private String redirectDestino(String tipo) {
-        return switch (tipo.toLowerCase()) {
-            case "aluno"         -> "redirect:/aluno/painel";
-            case "treinador"     -> "redirect:/treinador/painel";
-            case "nutricionista" -> "redirect:/treinador/painel";
-            default              -> "redirect:/dashboard";
-        };
+        return "redirect:/configuracoes";
     }
 }

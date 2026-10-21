@@ -1,193 +1,123 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Life Fit — Entrar</title>
-    <link rel="stylesheet" th:href="@{/login.css}">
-    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
-    <script>
-        (function() {
-            const t = localStorage.getItem('theme');
-            if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches))
-                document.documentElement.classList.add('dark-mode');
-        })();
-    </script>
-</head>
-<body>
-<div class="auth-page">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Entrar')}"></head>
+<body th:with="mostrarCadastro=${param.cadastro != null or erro != null}">
+<div class="auth">
 
-    <!-- LADO ESQUERDO — BRANDING -->
-    <div class="auth-brand">
-        <div class="auth-brand-content">
-            <a href="/" class="auth-logo">
-                <svg viewBox="0 0 200 32" height="32" xmlns="http://www.w3.org/2000/svg">
-                    <polyline points="0,16 7,16 12,3 17,26 22,9 27,16 34,16"
-                              fill="none" stroke="white" stroke-width="2.5"
-                              stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="17" cy="16" r="13" fill="none" stroke="white" stroke-width="1.2" opacity="0.4"/>
-                    <text x="42" y="22" font-family="Poppins,sans-serif" font-weight="800"
-                          font-size="18" fill="white">LIFE</text>
-                    <line x1="82" y1="6" x2="82" y2="26" stroke="white" stroke-width="1.2" opacity="0.5"/>
-                    <text x="88" y="22" font-family="Poppins,sans-serif" font-weight="800"
-                          font-size="18" fill="rgba(255,255,255,0.85)">FIT</text>
-                </svg>
-            </a>
-            <div class="auth-brand-text">
-                <h1>Transforme seu corpo.<br>Eleve sua mente.</h1>
-                <p>Conectamos você a treinadores e nutricionistas de alto nível para um acompanhamento 100% personalizado.</p>
-            </div>
-            <div class="auth-brand-stats">
-                <div class="auth-stat">
-                    <strong>100+</strong>
-                    <span>Alunos</span>
-                </div>
-                <div class="auth-stat">
-                    <strong>15+</strong>
-                    <span>Profissionais</span>
-                </div>
-                <div class="auth-stat">
-                    <strong>98%</strong>
-                    <span>Satisfação</span>
-                </div>
-            </div>
+    <aside class="auth-lado">
+        <a th:replace="~{fragments/header :: marca}"></a>
+        <div>
+            <h1 class="titulo-display">Seu treino e sua dieta num lugar só</h1>
+            <p>Alunos acompanham a ficha e o plano alimentar. Treinadores e nutricionistas montam os planos e respondem pelo chat.</p>
         </div>
-    </div>
+        <small>Mesma conta para aluno, treinador e nutricionista.</small>
+    </aside>
 
-    <!-- LADO DIREITO — FORMULÁRIOS -->
-    <div class="auth-forms">
-        <div class="auth-forms-inner" id="wrapper">
+    <main class="auth-forms">
+        <div class="auth-caixa">
 
-            <!-- MENSAGENS -->
-            <div th:if="${param.erro}" class="auth-alert auth-alert-error">
-                Email ou senha incorretos.
-            </div>
-            <div th:if="${param.saiu}" class="auth-alert auth-alert-success">
-                Você saiu com sucesso.
-            </div>
-            <div th:if="${erro}" class="auth-alert auth-alert-error" th:text="${erro}"></div>
-            <div th:if="${sucesso}" class="auth-alert auth-alert-success" th:text="${sucesso}"></div>
+            <div th:if="${param.erro}" class="alerta alerta-erro" role="alert">Email ou senha incorretos. Confira e tente de novo.</div>
+            <div th:if="${param.saiu}" class="alerta alerta-sucesso" role="status">Você saiu da sua conta.</div>
+            <div th:if="${erro}" class="alerta alerta-erro" role="alert" th:text="${erro}"></div>
+            <div th:if="${sucesso}" class="alerta alerta-sucesso" role="status" th:text="${sucesso}"></div>
 
-            <!-- LOGIN -->
-            <div class="auth-card" id="card-login">
-                <div class="auth-card-header">
-                    <h2>Bem-vindo de volta</h2>
-                    <p>Entre na sua conta para continuar</p>
-                </div>
+            <!-- ENTRAR -->
+            <section class="auth-card" id="card-login" th:classappend="${mostrarCadastro} ? 'hidden'">
+                <h2 class="titulo-display">Entrar</h2>
+                <p>Use o email e a senha da sua conta.</p>
 
-                <form action="/login" method="POST">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
-                    <div class="auth-field">
-                        <label>Email</label>
-                        <div class="auth-input-wrapper">
-                            <span class="auth-input-icon">✉️</span>
-                            <input type="email" name="username" placeholder="seu@email.com" required>
+                <form th:action="@{/login}" method="POST">
+                    <div class="campo">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" name="username" autocomplete="email" required>
+                    </div>
+                    <div class="campo">
+                        <label for="login-senha">Senha</label>
+                        <div class="campo-senha">
+                            <input type="password" id="login-senha" name="password" autocomplete="current-password" required>
+                            <button type="button" class="btn-texto" onclick="toggleAuth('login-senha', this)">Mostrar</button>
                         </div>
                     </div>
-
-                    <div class="auth-field">
-                        <label>Senha</label>
-                        <div class="auth-input-wrapper">
-                            <span class="auth-input-icon">🔒</span>
-                            <input type="password" name="password" id="login-senha" placeholder="••••••••" required>
-                            <span class="auth-eye" onclick="toggleAuth('login-senha', this)">👁️</span>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="auth-btn">Entrar</button>
+                    <button type="submit" class="btn btn-primario btn-bloco">Entrar</button>
                 </form>
 
-                <p class="auth-switch">
-                    Não tem conta?
-                    <a href="#" id="go-register">Criar conta grátis →</a>
-                </p>
-            </div>
+                <p class="auth-trocar">Ainda não tem conta? <a href="#" id="go-register">Criar conta</a></p>
+            </section>
 
-            <!-- REGISTRO -->
-            <div class="auth-card hidden" id="card-register">
-                <div class="auth-card-header">
-                    <h2>Criar conta</h2>
-                    <p>Comece sua jornada agora mesmo</p>
-                </div>
+            <!-- CRIAR CONTA -->
+            <section class="auth-card" id="card-register" th:classappend="${mostrarCadastro} ? '' : 'hidden'">
+                <h2 class="titulo-display">Criar conta</h2>
+                <p>Depois de criar, é só entrar com o mesmo email e senha.</p>
 
-                <form action="/registrar" method="POST">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
-                    <div class="auth-field">
-                        <label>Nome completo</label>
-                        <div class="auth-input-wrapper">
-                            <span class="auth-input-icon">👤</span>
-                            <input type="text" name="nome" placeholder="Seu nome" required>
-                        </div>
-                    </div>
-
-                    <div class="auth-field">
-                        <label>Email</label>
-                        <div class="auth-input-wrapper">
-                            <span class="auth-input-icon">✉️</span>
-                            <input type="email" name="email" placeholder="seu@email.com" required>
-                        </div>
-                    </div>
-
-                    <div class="auth-field">
-                        <label>Senha</label>
-                        <div class="auth-input-wrapper">
-                            <span class="auth-input-icon">🔒</span>
-                            <input type="password" name="senha" id="reg-senha" placeholder="••••••••" required>
-                            <span class="auth-eye" onclick="toggleAuth('reg-senha', this)">👁️</span>
-                        </div>
-                    </div>
-
-                    <div class="auth-field">
-                        <label>Você é</label>
-                        <div class="auth-tipo-btns">
-                            <button type="button" class="tipo-btn active" data-tipo="aluno">🏃 Aluno</button>
-                            <button type="button" class="tipo-btn" data-tipo="treinador">💪 Treinador</button>
-                            <button type="button" class="tipo-btn" data-tipo="nutricionista">🥗 Nutricionista</button>
+                <form th:action="@{/registrar}" method="POST">
+                    <div class="campo">
+                        <span id="tipo-rotulo" style="font-size:0.88rem;font-weight:600">Você é</span>
+                        <div class="tipo-opcoes" role="group" aria-labelledby="tipo-rotulo">
+                            <button type="button" class="tipo-btn active" data-tipo="aluno" aria-pressed="true">Aluno</button>
+                            <button type="button" class="tipo-btn" data-tipo="treinador" aria-pressed="false">Treinador</button>
+                            <button type="button" class="tipo-btn" data-tipo="nutricionista" aria-pressed="false">Nutricionista</button>
                         </div>
                         <input type="hidden" name="tipo" id="tipo-hidden" value="aluno">
                     </div>
-
-                    <button type="submit" class="auth-btn">Criar conta</button>
+                    <div class="campo">
+                        <label for="reg-nome">Nome completo</label>
+                        <input type="text" id="reg-nome" name="nome" autocomplete="name" required>
+                    </div>
+                    <div class="campo">
+                        <label for="reg-email">Email</label>
+                        <input type="email" id="reg-email" name="email" autocomplete="email" required>
+                    </div>
+                    <div class="campo">
+                        <label for="reg-senha">Senha</label>
+                        <div class="campo-senha">
+                            <input type="password" id="reg-senha" name="senha" autocomplete="new-password" required>
+                            <button type="button" class="btn-texto" onclick="toggleAuth('reg-senha', this)">Mostrar</button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primario btn-bloco">Criar conta</button>
                 </form>
 
-                <p class="auth-switch">
-                    Já tem conta?
-                    <a href="#" id="go-login">Entrar →</a>
-                </p>
-            </div>
+                <p class="auth-trocar">Já tem conta? <a href="#" id="go-login">Entrar</a></p>
+            </section>
 
         </div>
-    </div>
+    </main>
 </div>
 
-<script th:src="@{/login.js}"></script>
 <script>
-    document.getElementById('go-register').addEventListener('click', function(e) {
+    function mostrar(id) {
+        document.getElementById('card-login').classList.toggle('hidden', id !== 'card-login');
+        document.getElementById('card-register').classList.toggle('hidden', id !== 'card-register');
+        document.querySelector('#' + id + ' input:not([type=hidden])').focus();
+    }
+
+    document.getElementById('go-register').addEventListener('click', function (e) {
         e.preventDefault();
-        document.getElementById('card-login').classList.add('hidden');
-        document.getElementById('card-register').classList.remove('hidden');
+        mostrar('card-register');
     });
 
-    document.getElementById('go-login').addEventListener('click', function(e) {
+    document.getElementById('go-login').addEventListener('click', function (e) {
         e.preventDefault();
-        document.getElementById('card-register').classList.add('hidden');
-        document.getElementById('card-login').classList.remove('hidden');
+        mostrar('card-login');
     });
 
     document.querySelectorAll('.tipo-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('active'));
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.tipo-btn').forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-pressed', 'false');
+            });
             this.classList.add('active');
+            this.setAttribute('aria-pressed', 'true');
             document.getElementById('tipo-hidden').value = this.dataset.tipo;
         });
     });
 
-    function toggleAuth(id, el) {
+    function toggleAuth(id, botao) {
         const input = document.getElementById(id);
-        if (input.type === 'password') { input.type = 'text'; el.textContent = '🙈'; }
-        else { input.type = 'password'; el.textContent = '👁️'; }
+        const mostrando = input.type === 'text';
+        input.type = mostrando ? 'password' : 'text';
+        botao.textContent = mostrando ? 'Mostrar' : 'Ocultar';
     }
 </script>
 </body>

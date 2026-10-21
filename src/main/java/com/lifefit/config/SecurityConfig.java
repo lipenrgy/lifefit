@@ -37,8 +37,10 @@ public class SecurityConfig {
                 .authenticationProvider(authProvider())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/",
                                 "/login",
                                 "/registrar",
+                                "/*.svg",
                                 "/css/**",
                                 "/js/**",
                                 "/*.css",
@@ -49,7 +51,7 @@ public class SecurityConfig {
                                 "/uploads/**",
                                 "/webjars/**"
                         ).permitAll()
-                        .requestMatchers("/api/aluno/**").hasRole("ALUNO")
+                        .requestMatchers("/aluno/**", "/api/aluno/**").hasRole("ALUNO")
                         .requestMatchers("/treinador/**").hasAnyRole("TREINADOR", "NUTRICIONISTA")
                         .requestMatchers("/api/treinador/**").hasAnyRole("TREINADOR", "NUTRICIONISTA")
                         .requestMatchers("/configuracoes", "/api/atualizar-perfil").authenticated()

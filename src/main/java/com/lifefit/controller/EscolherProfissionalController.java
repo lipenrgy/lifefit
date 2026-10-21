@@ -35,6 +35,17 @@ public class EscolherProfissionalController {
 
         // Define qual campo atualizar
         String tipo = tipo_profissional.toLowerCase();
+
+        // Confere se o ID é mesmo de um profissional do tipo informado
+        boolean profissionalValido = usuarioRepository.findById(id_profissional)
+                .map(p -> tipo.equals(p.getTipo()))
+                .orElse(false);
+        if (!profissionalValido) {
+            response.put("status", "error");
+            response.put("message", "Profissional não encontrado.");
+            return ResponseEntity.ok(response);
+        }
+
         if (tipo.equals("treinador")) {
             aluno.setMeuTreinadorId(id_profissional);
         } else if (tipo.equals("nutricionista")) {

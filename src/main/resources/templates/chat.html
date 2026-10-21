@@ -1,57 +1,35 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat — Life Fit</title>
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-    <link rel="stylesheet" th:href="@{/painel.css}">
-    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
-    <script>
-        (function() {
-            const t = localStorage.getItem('theme');
-            if (t === 'dark') document.documentElement.classList.add('dark-mode');
-            else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
-                document.documentElement.classList.add('dark-mode');
-        })();
-    </script>
-</head>
-<body class="chat-page">
+<head th:replace="~{fragments/header :: head('Chat')}"></head>
+<body>
 
-<div th:replace="~{fragments/header :: header(${usuario})}"></div>
+<header th:replace="~{fragments/header :: header(${usuario}, 'chat')}"></header>
 
-<div class="chat-container">
-
-    <div class="chat-sidebar">
-        <div class="sidebar-header">💬 Mensagens</div>
-        <div id="lista-contatos" class="contacts-list">
-            <div style="padding:20px;text-align:center;color:var(--texto-secundario);font-size:0.88rem;">
-                Carregando...
-            </div>
+<main class="chat">
+    <nav class="chat-contatos" aria-labelledby="titulo-conversas">
+        <h1 id="titulo-conversas">Conversas</h1>
+        <div id="lista-contatos">
+            <p class="placeholder-col">Carregando…</p>
         </div>
-    </div>
+    </nav>
 
-    <div class="chat-main">
+    <section class="chat-main" aria-labelledby="nome-destinatario">
         <div class="chat-header">
-            <h3 id="nome-destinatario">Selecione um contato</h3>
+            <h2 id="nome-destinatario">Nenhuma conversa aberta</h2>
         </div>
 
-        <div class="chat-messages" id="chat-messages">
-            <div class="empty-state">
-                <span style="font-size:3rem;">💬</span>
-                <p>Escolha um contato para começar</p>
-            </div>
+        <div class="chat-messages" id="chat-messages" aria-live="polite">
+            <p class="empty-state">Escolha alguém na lista para ver a conversa.</p>
         </div>
 
-        <form class="chat-input-area" id="form-mensagem" style="display:none;">
+        <form class="chat-input-area hidden" id="form-mensagem">
             <input type="hidden" id="id-destinatario-atual">
-            <input type="text" id="input-mensagem" placeholder="Digite sua mensagem..." autocomplete="off">
-            <button type="submit" class="btn-enviar">➤</button>
+            <label class="visualmente-oculto" for="input-mensagem">Mensagem</label>
+            <input type="text" id="input-mensagem" class="entrada" placeholder="Escreva uma mensagem" autocomplete="off">
+            <button type="submit" class="btn btn-primario">Enviar</button>
         </form>
-    </div>
-
-</div>
+    </section>
+</main>
 
 <script th:src="@{/chat.js}"></script>
 <script th:src="@{/theme-toggle.js}"></script>

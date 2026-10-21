@@ -8,12 +8,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Set;
+
 @Controller
 @RequiredArgsConstructor
 public class RegistroController {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private static final Set<String> TIPOS_VALIDOS = Set.of("aluno", "treinador", "nutricionista");
 
     @PostMapping("/registrar")
     public String registrar(
@@ -26,6 +30,12 @@ public class RegistroController {
         // Validação — equivalente ao if (empty(...)) do PHP
         if (nome.isBlank() || email.isBlank() || senha.isBlank()) {
             redirectAttributes.addFlashAttribute("erro", "Todos os campos são obrigatórios.");
+            return "redirect:/login";
+        }
+
+        // Só aceita os tipos existentes — o tipo vira a role no Spring Security
+        if (!TIPOS_VALIDOS.contains(tipo)) {
+            redirectAttributes.addFlashAttribute("erro", "Tipo de usuário inválido.");
             return "redirect:/login";
         }
 

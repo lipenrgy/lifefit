@@ -7,5 +7,4 @@ import java.util.Optional;
 
 public interface PlanoRepository extends JpaRepository<Plano, Long> {
     Optional<Plano> findByAlunoIdAndProfissionalId(Long alunoId, Long profissionalId);
-    Optional<Plano> findByAlunoId(Long alunoId);
 }

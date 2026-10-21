@@ -1,60 +1,54 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
     const calcForm = document.getElementById('calc-form');
     const resultadoDiv = document.getElementById('resultado');
+    if (!calcForm) return;
 
-    if (calcForm) {
-        calcForm.addEventListener('submit', function(event) {
-            event.preventDefault();
+    // Faixas da OMS; a escala visual vai de 15 a 40
+    const FAIXAS = [
+        { ate: 18.5,     nome: 'Abaixo do peso' },
+        { ate: 25,       nome: 'Peso normal' },
+        { ate: 30,       nome: 'Sobrepeso' },
+        { ate: Infinity, nome: 'Obesidade' }
+    ];
+    const ESCALA_MIN = 15, ESCALA_MAX = 40;
 
-            const estaLogado = calcForm.getAttribute('data-logado') === 'true';
-            const linkPainel = calcForm.getAttribute('data-link');
+    calcForm.addEventListener('submit', function (event) {
+        event.preventDefault();
 
-            const peso = parseFloat(document.getElementById('peso').value);
-            const altura = parseFloat(document.getElementById('altura').value);
+        const estaLogado = calcForm.dataset.logado === 'true';
+        const linkPainel = calcForm.dataset.link;
 
-            if (isNaN(peso) || isNaN(altura) || peso <= 0 || altura <= 0) {
-                alert("Por favor, insira valores válidos.");
-                return;
-            }
+        const peso = parseFloat(document.getElementById('peso').value.replace(',', '.'));
+        const altura = parseFloat(document.getElementById('altura').value);
 
-            const alturaEmMetros = altura / 100;
-            const imc = peso / (alturaEmMetros * alturaEmMetros);
-            const imcFormatado = imc.toFixed(2);
+        if (!(peso > 0) || !(altura > 0)) {
+            resultadoDiv.innerHTML = '<p class="imc-resultado-vazio">Informe peso em kg e altura em cm, os dois maiores que zero.</p>';
+            return;
+        }
 
-            let classificacao = '';
-            let cor = '';
+        const alturaM = altura / 100;
+        const imc = peso / (alturaM * alturaM);
+        const faixa = FAIXAS.find(f => imc < f.ate);
+        const posicao = Math.min(Math.max((imc - ESCALA_MIN) / (ESCALA_MAX - ESCALA_MIN), 0), 1) * 100;
 
-            if (imc < 18.5)       { classificacao = 'Abaixo do peso';       cor = '#ffc107'; }
-            else if (imc < 24.9)  { classificacao = 'Peso normal (Em forma)'; cor = '#2ecc71'; }
-            else if (imc < 29.9)  { classificacao = 'Sobrepeso';             cor = '#e67e22'; }
-            else                  { classificacao = 'Obesidade';              cor = '#e74c3c'; }
+        const proximo = estaLogado
+            ? `<p>Seu treinador e seu nutricionista veem seus dados físicos quando você preenche em Configurações.</p>
+               <a href="${linkPainel}" class="btn btn-secundario">Ir para meu painel</a>`
+            : `<p>Quer um plano feito para você? Crie uma conta e escolha um treinador e um nutricionista.</p>
+               <a href="/login?cadastro=true" class="btn btn-primario">Criar conta</a>`;
 
-            let htmlBotao = '';
-            let textoIncentivo = '';
-
-            if (estaLogado) {
-                textoIncentivo = 'Esse resultado já fica salvo no seu histórico!';
-                htmlBotao = `
-                    <a href="${linkPainel}" class="btn" style="background-color:#8A2BE2;color:white;display:inline-block;margin-top:10px;text-decoration:none;padding:10px 20px;border-radius:5px;">
-                        Ir para meu Painel
-                    </a>`;
-            } else {
-                textoIncentivo = 'Este é um ótimo primeiro passo! Que tal um plano feito sob medida?';
-                htmlBotao = `
-                    <a href="/login" class="btn" style="background-color:#8A2BE2;color:white;display:inline-block;margin-top:10px;text-decoration:none;padding:10px 20px;border-radius:5px;">
-                        Registre-se para um Plano Personalizado!
-                    </a>`;
-            }
-
-            resultadoDiv.classList.remove('hidden');
-            resultadoDiv.innerHTML = `
-                <h3 style="color:#8A2BE2;">Seu Resultado:</h3>
-                <p>Seu IMC é <strong>${imcFormatado}</strong>.</p>
-                <p>Classificação: <strong style="color:${cor}">${classificacao}</strong>.</p>
-                <p style="margin-top:15px;color:#ccc;font-size:0.9rem;">${textoIncentivo}</p>
-                ${htmlBotao}
-            `;
-        });
-    }
+        resultadoDiv.innerHTML = `
+            <div class="imc-valor">${imc.toFixed(1).replace('.', ',')}</div>
+            <div class="imc-classe">${faixa.nome}</div>
+            <div class="imc-escala" aria-hidden="true">
+                <div class="imc-faixas"><span></span><span></span><span></span><span></span></div>
+                <div class="imc-marcador" style="left:${posicao}%"></div>
+            </div>
+            <div class="imc-legenda" aria-hidden="true">
+                <span style="left:0%">15</span><span style="left:14%">18,5</span><span style="left:40%">25</span><span style="left:60%">30</span><span style="left:100%">40</span>
+            </div>
+            <div class="imc-proximo">${proximo}</div>
+        `;
+    });
 });

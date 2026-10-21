@@ -1,38 +1,37 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Painel — Life Fit</title>
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-    <link rel="stylesheet" th:href="@{/painel.css}">
-    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
-    <script>
-        (function() {
-            const t = localStorage.getItem('theme');
-            if (t === 'dark') document.documentElement.classList.add('dark-mode');
-            else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
-                document.documentElement.classList.add('dark-mode');
-        })();
-    </script>
-</head>
+<head th:replace="~{fragments/header :: head('Minha ficha')}"></head>
 <body>
 
-<div th:replace="~{fragments/header :: header(${usuario})}"></div>
+<header th:replace="~{fragments/header :: header(${usuario}, 'painel')}"></header>
 
-<main class="painel-container-aluno">
-
-    <div class="plano-display">
-        <h2>🏋️ Plano de Treino</h2>
-        <p id="meu-treino" class="plano-conteudo">Carregando...</p>
+<main class="pagina">
+    <div class="pagina-cabecalho">
+        <h1 class="titulo-display" th:text="'Olá, ' + ${#strings.arraySplit(usuario.nome, ' ')[0]}">Olá</h1>
+        <p>Sua ficha de treino e seu plano alimentar ficam aqui. Quando o profissional atualizar, você vê na hora.</p>
     </div>
 
-    <div class="plano-display">
-        <h2>🥗 Plano de Dieta</h2>
-        <p id="minha-dieta" class="plano-conteudo">Carregando...</p>
-    </div>
+    <div class="aluno-grade">
+        <section class="ficha" aria-labelledby="titulo-treino">
+            <div class="ficha-topo">
+                <strong id="titulo-treino">Ficha de treino</strong>
+            </div>
+            <div id="meu-treino"
+                 th:attr="data-tem-treinador=${usuario.meuTreinadorId != null}">
+                <p class="ficha-vazia">Carregando sua ficha…</p>
+            </div>
+        </section>
 
+        <section class="dieta" aria-labelledby="titulo-dieta">
+            <div class="ficha-topo">
+                <strong id="titulo-dieta">Plano alimentar</strong>
+            </div>
+            <div id="minha-dieta" class="dieta-texto"
+                 th:attr="data-tem-nutricionista=${usuario.meuNutricionistaId != null}">
+                <span class="texto-espera">Carregando…</span>
+            </div>
+        </section>
+    </div>
 </main>
 
 <script th:src="@{/painel_aluno.js}"></script>

@@ -1,27 +1,13 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const toggleSwitch = document.querySelector('#checkbox-theme');
-    const currentTheme = localStorage.getItem('theme');
+    if (!toggleSwitch) return;
 
-    if (currentTheme) {
-        document.documentElement.classList.add(currentTheme === 'dark' ? 'dark-mode' : 'light-mode');
-        if (currentTheme === 'dark' && toggleSwitch) {
-            toggleSwitch.checked = true;
-        }
-    }
+    // O <head> já aplicou o tema salvo (ou o do sistema); só sincroniza a chave
+    toggleSwitch.checked = document.documentElement.classList.contains('dark-mode');
 
-    function switchTheme(e) {
-        if (e.target.checked) {
-            document.documentElement.classList.add('dark-mode');
-            document.documentElement.classList.remove('light-mode');
-            localStorage.setItem('theme', 'dark');
-        } else {
-            document.documentElement.classList.remove('dark-mode');
-            document.documentElement.classList.add('light-mode');
-            localStorage.setItem('theme', 'light');
-        }
-    }
-
-    if (toggleSwitch) {
-        toggleSwitch.addEventListener('change', switchTheme, false);
-    }
+    toggleSwitch.addEventListener('change', function (e) {
+        const escuro = e.target.checked;
+        document.documentElement.classList.toggle('dark-mode', escuro);
+        try { localStorage.setItem('theme', escuro ? 'dark' : 'light'); } catch (err) {}
+    });
 });

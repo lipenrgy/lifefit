@@ -3,15 +3,19 @@ package com.lifefit.controller;
 import com.lifefit.model.*;
 import com.lifefit.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import jakarta.transaction.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -79,26 +83,29 @@ public class TreinadorController {
             @AuthenticationPrincipal UserDetails userDetails) {
 
         Usuario profissional = usuarioRepository.findByEmail(userDetails.getUsername()).orElseThrow();
+        exigirAlunoDoProfissional(alunoId, profissional);
+
         Plano plano = planoRepository.findByAlunoIdAndProfissionalId(alunoId, profissional.getId())
                 .orElse(null);
 
         if (plano == null) return new ArrayList<>();
 
         List<PlanoExercicio> itens = planoExercicioRepository.findByPlanoIdOrderByOrdemAsc(plano.getId());
+        Map<Long, Exercicio> exerciciosPorId = buscarExerciciosPorId(itens);
         List<Map<String, Object>> resultado = new ArrayList<>();
 
         for (PlanoExercicio pe : itens) {
-            exercicioRepository.findById(pe.getExercicioId()).ifPresent(ex -> {
-                Map<String, Object> map = new HashMap<>();
-                map.put("id", pe.getId());
-                map.put("exercicioId", ex.getId());
-                map.put("nome", ex.getNome());
-                map.put("categoria", ex.getCategoria());
-                map.put("series", pe.getSeries());
-                map.put("repeticoes", pe.getRepeticoes());
-                map.put("peso", pe.getPeso());
-                resultado.add(map);
-            });
+            Exercicio ex = exerciciosPorId.get(pe.getExercicioId());
+            if (ex == null) continue;
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", pe.getId());
+            map.put("exercicioId", ex.getId());
+            map.put("nome", ex.getNome());
+            map.put("categoria", ex.getCategoria());
+            map.put("series", pe.getSeries());
+            map.put("repeticoes", pe.getRepeticoes());
+            map.put("peso", pe.getPeso());
+            resultado.add(map);
         }
         return resultado;
     }
@@ -113,7 +120,27 @@ public class TreinadorController {
         Map<String, Object> response = new HashMap<>();
         Usuario profissional = usuarioRepository.findByEmail(userDetails.getUsername()).orElseThrow();
 
-        Long alunoId = Long.valueOf(body.get("alunoId").toString());
+        Long alunoId;
+        List<PlanoExercicio> novosItens = new ArrayList<>();
+        try {
+            alunoId = Long.valueOf(body.get("alunoId").toString());
+
+            List<Map<String, Object>> exercicios = (List<Map<String, Object>>) body.get("exercicios");
+            for (Map<String, Object> ex : exercicios) {
+                PlanoExercicio pe = new PlanoExercicio();
+                pe.setExercicioId(Long.valueOf(ex.get("exercicioId").toString()));
+                pe.setSeries(Integer.valueOf(ex.get("series").toString()));
+                pe.setRepeticoes(Integer.valueOf(ex.get("repeticoes").toString()));
+                pe.setPeso(Double.valueOf(ex.get("peso").toString()));
+                novosItens.add(pe);
+            }
+        } catch (NullPointerException | ClassCastException | NumberFormatException e) {
+            response.put("status", "error");
+            response.put("message", "Dados do plano inválidos. Verifique séries, repetições e peso.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        exigirAlunoDoProfissional(alunoId, profissional);
 
         Plano plano = planoRepository.findByAlunoIdAndProfissionalId(alunoId, profissional.getId())
                 .orElse(new Plano());
@@ -124,18 +151,12 @@ public class TreinadorController {
 
         planoExercicioRepository.deleteByPlanoId(plano.getId());
 
-        List<Map<String, Object>> exercicios = (List<Map<String, Object>>) body.get("exercicios");
         int ordem = 0;
-        for (Map<String, Object> ex : exercicios) {
-            PlanoExercicio pe = new PlanoExercicio();
+        for (PlanoExercicio pe : novosItens) {
             pe.setPlanoId(plano.getId());
-            pe.setExercicioId(Long.valueOf(ex.get("exercicioId").toString()));
-            pe.setSeries(Integer.valueOf(ex.get("series").toString()));
-            pe.setRepeticoes(Integer.valueOf(ex.get("repeticoes").toString()));
-            pe.setPeso(Double.valueOf(ex.get("peso").toString()));
             pe.setOrdem(ordem++);
-            planoExercicioRepository.save(pe);
         }
+        planoExercicioRepository.saveAll(novosItens);
 
         response.put("status", "success");
         response.put("message", "Plano salvo com sucesso!");
@@ -148,6 +169,8 @@ public class TreinadorController {
             @RequestParam Long alunoId,
             @AuthenticationPrincipal UserDetails userDetails) {
         Usuario profissional = usuarioRepository.findByEmail(userDetails.getUsername()).orElseThrow();
+        exigirAlunoDoProfissional(alunoId, profissional);
+
         Map<String, Object> response = new HashMap<>();
         planoRepository.findByAlunoIdAndProfissionalId(alunoId, profissional.getId())
                 .ifPresentOrElse(p -> {
@@ -169,6 +192,8 @@ public class TreinadorController {
             @AuthenticationPrincipal UserDetails userDetails) {
 
         Usuario profissional = usuarioRepository.findByEmail(userDetails.getUsername()).orElseThrow();
+        exigirAlunoDoProfissional(alunoId, profissional);
+
         Plano plano = planoRepository.findByAlunoIdAndProfissionalId(alunoId, profissional.getId())
                 .orElse(new Plano());
         plano.setAlunoId(alunoId);
@@ -190,20 +215,38 @@ public class TreinadorController {
             @RequestParam Long alunoId,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Map<String, Object> response = new HashMap<>();
-        usuarioRepository.findById(alunoId).ifPresent(aluno -> {
-            response.put("nome", aluno.getNome());
-            response.put("peso", aluno.getPeso());
-            response.put("alturaCm", aluno.getAlturaCm());
-            response.put("idade", aluno.getIdade());
-            response.put("nivelAtividade", aluno.getNivelAtividade());
+        Usuario profissional = usuarioRepository.findByEmail(userDetails.getUsername()).orElseThrow();
+        Usuario aluno = exigirAlunoDoProfissional(alunoId, profissional);
 
-            if (aluno.getPeso() != null && aluno.getAlturaCm() != null && aluno.getAlturaCm() > 0) {
-                double alturaM = aluno.getAlturaCm() / 100.0;
-                double imc = aluno.getPeso() / (alturaM * alturaM);
-                response.put("imc", String.format("%.1f", imc));
-            }
-        });
+        Map<String, Object> response = new HashMap<>();
+        response.put("nome", aluno.getNome());
+        response.put("peso", aluno.getPeso());
+        response.put("alturaCm", aluno.getAlturaCm());
+        response.put("idade", aluno.getIdade());
+        response.put("nivelAtividade", aluno.getNivelAtividade());
+
+        if (aluno.getPeso() != null && aluno.getAlturaCm() != null && aluno.getAlturaCm() > 0) {
+            double alturaM = aluno.getAlturaCm() / 100.0;
+            double imc = aluno.getPeso() / (alturaM * alturaM);
+            response.put("imc", String.format("%.1f", imc));
+        }
         return response;
+    }
+
+    // Garante que o aluno escolheu este profissional; senão responde 403
+    private Usuario exigirAlunoDoProfissional(Long alunoId, Usuario profissional) {
+        return usuarioRepository.findById(alunoId)
+                .filter(a -> "aluno".equals(a.getTipo()))
+                .filter(a -> profissional.getId().equals(
+                        "treinador".equals(profissional.getTipo())
+                                ? a.getMeuTreinadorId()
+                                : a.getMeuNutricionistaId()))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Aluno não vinculado a você."));
+    }
+
+    private Map<Long, Exercicio> buscarExerciciosPorId(List<PlanoExercicio> itens) {
+        List<Long> ids = itens.stream().map(PlanoExercicio::getExercicioId).toList();
+        return exercicioRepository.findAllById(ids).stream()
+                .collect(Collectors.toMap(Exercicio::getId, Function.identity()));
     }
 }

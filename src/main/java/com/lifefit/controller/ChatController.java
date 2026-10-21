@@ -5,12 +5,14 @@ import com.lifefit.model.Usuario;
 import com.lifefit.repository.MensagemRepository;
 import com.lifefit.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -66,6 +68,9 @@ public class ChatController {
             @AuthenticationPrincipal UserDetails userDetails) {
 
         Usuario eu = usuarioRepository.findByEmail(userDetails.getUsername()).orElseThrow();
+        if (!podeConversar(eu, idContato)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Contato não vinculado a você.");
+        }
         List<Mensagem> msgs = mensagemRepository.findConversa(eu.getId(), idContato);
 
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
@@ -94,6 +99,12 @@ public class ChatController {
             return ResponseEntity.ok(response);
         }
 
+        if (!podeConversar(eu, idDestinatario)) {
+            response.put("status", "error");
+            response.put("message", "Contato não vinculado a você.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
+
         Mensagem msg = new Mensagem();
         msg.setIdRemetente(eu.getId());
         msg.setIdDestinatario(idDestinatario);
@@ -103,5 +114,18 @@ public class ChatController {
 
         response.put("status", "success");
         return ResponseEntity.ok(response);
+    }
+
+    // Só aluno <-> profissional escolhido por ele podem trocar mensagens
+    private boolean podeConversar(Usuario eu, Long idOutro) {
+        return usuarioRepository.findById(idOutro)
+                .map(outro -> vinculados(eu, outro) || vinculados(outro, eu))
+                .orElse(false);
+    }
+
+    private boolean vinculados(Usuario aluno, Usuario profissional) {
+        return "aluno".equals(aluno.getTipo())
+                && (profissional.getId().equals(aluno.getMeuTreinadorId())
+                    || profissional.getId().equals(aluno.getMeuNutricionistaId()));
     }
 }
